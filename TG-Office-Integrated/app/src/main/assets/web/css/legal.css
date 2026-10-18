@@ -1,0 +1,13 @@
+@font-face{font-family:'Plus Jakarta Sans';src:url('../fonts/PlusJakartaSans-Variable.ttf') format('truetype');font-weight:200 800;font-display:swap}
+:root{--bg:#E6ECF4;--surface:#fff;--alt:#F3F6FB;--ink:#14243A;--muted:#56677E;--line:#D3DCE8;--accent:#1557B5}
+@media (prefers-color-scheme:dark){:root{--bg:#0E151E;--surface:#172231;--alt:#1F2C3E;--ink:#EEF3FA;--muted:#A9B8CB;--line:#33465E;--accent:#7DB2FF}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;line-height:1.6}
+.top{position:sticky;top:0;display:flex;align-items:center;gap:6px;height:64px;padding:0 8px;background:var(--surface);border-bottom:1px solid var(--line)}
+.top a{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.top a svg{width:24px;height:24px;fill:currentColor}.top h1{margin:0;font-size:17px;font-weight:800}
+main{width:min(720px,100%);margin:0 auto;padding:20px}
+.card{background:var(--surface);border-radius:20px;padding:20px;margin-bottom:14px}
+h2{font-size:16px;margin:0 0 8px}p,li{font-size:14.5px}ul{padding-left:20px;margin:8px 0}
+.meta{font-size:13px;color:var(--muted);margin:0 0 6px}a{color:var(--accent);font-weight:600}
+.lic{border-top:1px solid var(--line);padding:12px 0}.lic:first-of-type{border-top:0}.lic strong{display:block}.lic span{font-size:13px;color:var(--muted)}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:8px 0 24px}

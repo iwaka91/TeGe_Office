@@ -1,0 +1,61 @@
+plugins { id 'com.android.application' }
+def tgKeystore = System.getenv('TG_KEYSTORE_PATH')
+// Kunci unggah Play Store (hanya ada di CI rilis, dari GitHub Secrets)
+def tgUpload = System.getenv('TG_UPLOAD_KEYSTORE_PATH')
+android {
+    namespace 'com.totogutomo.tgoffice'
+    compileSdk 36
+    compileSdkExtension 19
+    defaultConfig {
+        applicationId 'com.totogutomo.tgoffice'
+        minSdk 28
+        targetSdk 36
+        versionCode 10002
+        versionName '1.0.2'
+        resValue 'string', 'app_name', 'TeGe Office'
+    }
+    buildFeatures { resValues true }
+    signingConfigs {
+        if (tgKeystore) {
+            tgTest {
+                storeFile file(tgKeystore)
+                storePassword System.getenv('TG_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('TG_KEY_ALIAS')
+                keyPassword System.getenv('TG_KEY_PASSWORD') ?: System.getenv('TG_KEYSTORE_PASSWORD')
+            }
+        }
+        if (tgUpload) {
+            playUpload {
+                storeFile file(tgUpload)
+                storePassword System.getenv('TG_UPLOAD_STORE_PASSWORD')
+                keyAlias System.getenv('TG_UPLOAD_KEY_ALIAS')
+                keyPassword System.getenv('TG_UPLOAD_KEY_PASSWORD') ?: System.getenv('TG_UPLOAD_STORE_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            // Build uji: terpasang berdampingan dengan versi lain (com.totogutomo.tgoffice.beta)
+            applicationIdSuffix '.beta'
+            if (tgKeystore) signingConfig signingConfigs.tgTest
+            resValue 'string', 'app_name', 'TeGe Office'
+        }
+        release {
+            // Rilis Play Store: paket final com.totogutomo.tgoffice (tanpa .beta)
+            minifyEnabled false
+            if (tgUpload) signingConfig signingConfigs.playUpload
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    packaging {
+        resources { excludes += ['/META-INF/{AL2.0,LGPL2.1}'] }
+    }
+}
+dependencies {
+    implementation project(':pdfengine')
+    implementation 'androidx.webkit:webkit:1.12.1'
+    implementation 'androidx.core:core:1.13.1'
+}

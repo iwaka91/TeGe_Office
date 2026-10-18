@@ -1,0 +1,467 @@
+:root{
+  color-scheme:light;
+  --bg:#f3f6fb;--surface:#ffffff;--surface-2:#f8fafc;--text:#0f172a;--muted:#64748b;
+  --line:#dbe3ef;--accent:#2563eb;--accent-2:#7c3aed;--shadow:0 14px 38px rgba(15,23,42,.09);
+  --doc:#2563eb;--sheet:#0f9d66;--slide:#e05c2b;--pdf:#dc3346;--radius:22px;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#0b1020;--surface:#121a2c;--surface-2:#182237;--text:#edf3ff;--muted:#9badc7;
+  --line:#273550;--accent:#6ea8ff;--accent-2:#a78bfa;--shadow:0 16px 42px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input{font:inherit}.hidden{display:none!important}.app-shell{min-height:100vh}.topbar{height:78px;padding:12px clamp(16px,4vw,42px);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid color-mix(in srgb,var(--line) 72%,transparent)}
+.brand-block{display:flex;align-items:center;gap:12px}.brand-icon{width:46px;height:46px;border-radius:14px;box-shadow:0 8px 22px rgba(37,99,235,.22)}.brand-name{font-size:1.05rem;font-weight:800;letter-spacing:.01em}.brand-version{font-size:.75rem;color:var(--muted);margin-top:2px}.top-actions{display:flex;gap:8px}.icon-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);min-width:42px;height:42px;border-radius:13px;display:inline-grid;place-items:center;cursor:pointer;box-shadow:0 2px 10px rgba(15,23,42,.04)}.icon-btn:active{transform:translateY(1px)}.icon-btn.compact{min-width:34px;width:34px;height:34px;border-radius:10px}
+.home-screen{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 44px}.hero-card{min-height:330px;border-radius:32px;padding:clamp(26px,5vw,56px);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);align-items:center;gap:26px;color:white;background:radial-gradient(circle at 84% 25%,rgba(141,173,255,.42),transparent 28%),linear-gradient(135deg,#0f172a 0%,#172554 48%,#312e81 100%);box-shadow:var(--shadow);overflow:hidden;position:relative}.hero-card:after{content:"";position:absolute;inset:auto -10% -48% 38%;height:80%;border-radius:50%;background:rgba(255,255,255,.05);filter:blur(2px)}.eyebrow{font-size:.7rem;letter-spacing:.16em;font-weight:800;color:#7c8ca6}.hero-card .eyebrow{color:#a9c7ff}.hero-copy{position:relative;z-index:2}.hero-copy h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1.02;margin:10px 0 18px;max-width:760px}.hero-copy p{max-width:650px;font-size:clamp(.96rem,2vw,1.12rem);line-height:1.65;color:#d6e1f7;margin:0}.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px}.primary-btn{border:0;border-radius:14px;padding:13px 19px;background:#fff;color:#14213f;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.16)}.privacy-note{font-size:.78rem;color:#b9c8e7}.hero-orb{width:min(300px,68vw);aspect-ratio:1;border-radius:50%;margin:auto;display:grid;place-items:center;position:relative;border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 0 80px rgba(101,139,255,.16)}.orb-core{width:112px;aspect-ratio:1;border-radius:30px;display:grid;place-items:center;font-size:2.1rem;font-weight:900;background:linear-gradient(145deg,#fff,#b9d0ff);color:#172554;box-shadow:0 20px 55px rgba(0,0,0,.3)}.orbit-item{position:absolute;width:54px;height:54px;border-radius:18px;display:grid;place-items:center;font-weight:900;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px)}.orbit-doc{left:3%;top:23%}.orbit-sheet{right:2%;top:27%}.orbit-slide{left:17%;bottom:4%}.orbit-pdf{right:14%;bottom:2%;font-size:.67rem}
+.format-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}.format-card{min-height:102px;border:1px solid var(--line);border-radius:20px;background:var(--surface);padding:17px;text-align:left;display:flex;align-items:center;gap:14px;cursor:pointer;color:var(--text);box-shadow:0 5px 18px rgba(15,23,42,.04);transition:.18s ease}.format-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.format-icon{width:50px;height:50px;flex:0 0 auto;border-radius:15px;color:white;display:grid;place-items:center;font-weight:900}.format-card strong{display:block;font-size:.95rem}.format-card small{display:block;color:var(--muted);font-size:.72rem;margin-top:5px}.document .format-icon{background:var(--doc)}.spreadsheet .format-icon{background:var(--sheet)}.presentation .format-icon{background:var(--slide)}.pdf .format-icon{background:var(--pdf);font-size:.72rem}
+.drop-zone{border:1.5px dashed #9ab0d3;border-radius:22px;padding:23px;background:color-mix(in srgb,var(--surface) 74%,transparent);display:flex;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:.18s}.drop-zone.drag-over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface));transform:scale(.996)}.drop-icon{width:45px;height:45px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent);display:grid;place-items:center;font-size:1.45rem}.drop-zone strong,.drop-zone span{display:block}.drop-zone span{font-size:.78rem;color:var(--muted);margin-top:3px}
+.recent-section{margin-top:28px}.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}.section-heading h2{font-size:1.15rem;margin:4px 0 0}.text-btn{border:0;background:transparent;color:var(--accent);font-weight:700;cursor:pointer}.recent-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.recent-item{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:13px 15px;display:flex;align-items:center;gap:11px;cursor:pointer}.recent-item:hover{border-color:#9db3d7}.recent-type{width:39px;height:39px;border-radius:12px;color:#fff;display:grid;place-items:center;font-size:.7rem;font-weight:900}.recent-copy{min-width:0;flex:1}.recent-copy strong{font-size:.84rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recent-copy span{font-size:.7rem;color:var(--muted)}.recent-empty{grid-column:1/-1;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-align:center;color:var(--muted);font-size:.82rem}.status-strip{margin-top:18px;padding:10px 4px;color:var(--muted);font-size:.72rem;display:flex;align-items:center;gap:8px}.status-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8}.status-dot.online{background:#22c55e}.status-dot.offline{background:#f59e0b}.status-spacer{flex:1}
+.viewer-screen{position:fixed;inset:0;background:var(--bg);z-index:40;display:flex;flex-direction:column}.viewer-toolbar{min-height:64px;padding:8px 12px;display:flex;align-items:center;gap:10px;background:var(--surface);border-bottom:1px solid var(--line);z-index:5}.file-identity{min-width:0;max-width:36vw}.file-identity strong{display:block;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-identity span{display:block;color:var(--muted);font-size:.68rem;margin-top:2px}.engine-badge{font-size:.64rem;padding:5px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));white-space:nowrap}.toolbar-spacer{flex:1}.segmented{display:flex;border:1px solid var(--line);border-radius:11px;padding:3px;background:var(--surface-2)}.segmented button{border:0;background:transparent;color:var(--muted);padding:6px 10px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer}.segmented button.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(15,23,42,.09)}.zoom-group{display:flex;align-items:center;gap:7px}.zoom-group span{min-width:40px;text-align:center;font-size:.7rem;color:var(--muted)}.sub-toolbar{min-height:44px;padding:6px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;overflow:auto}.viewer-stage{min-height:0;flex:1;position:relative;overflow:hidden}.viewer-host{height:100%;overflow:auto;overscroll-behavior:contain}.loading-state{position:absolute;inset:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}.spinner{width:38px;height:38px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loading-state strong{font-size:.9rem}.loading-state span{font-size:.75rem;color:var(--muted)}
+/* DOCX */
+.docx-shell{min-height:100%;padding:28px 14px 80px;background:#e9eef5;color:#111827}.docx-shell.mobile{background:var(--surface);padding-top:18px}.docx-document{margin:0 auto;background:#fff;color:#111827;box-shadow:0 6px 22px rgba(15,23,42,.12);transform-origin:top center}.docx-shell.mobile .docx-document{width:min(780px,100%);box-shadow:none;padding:10px clamp(10px,3vw,28px);background:transparent;color:var(--text)}.docx-shell.print .docx-document{width:794px;min-height:1123px;padding:80px 82px}.docx-document p{margin:.48em 0;line-height:1.52}.docx-document h1,.docx-document h2,.docx-document h3{line-height:1.25}.docx-document table{width:100%;border-collapse:collapse;margin:12px 0}.docx-document td,.docx-document th{border:1px solid #94a3b8;padding:6px 8px;vertical-align:top}.docx-document img{max-width:100%;height:auto;vertical-align:middle}.docx-document .page-break{display:block;height:1px;margin:20px 0;border-top:1px dashed #b6c0cf}.docx-shell.mobile .page-break{display:none}.docx-msg{font-size:.72rem;color:#667085;margin:8px 0}.docx-run-highlight{background:#fff3a3}
+/* XLSX */
+.xlsx-shell{height:100%;display:flex;flex-direction:column;background:var(--bg)}.sheet-tabs{display:flex;gap:6px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--surface);overflow:auto}.sheet-tab{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:7px 12px;color:var(--muted);font-size:.72rem;cursor:pointer;white-space:nowrap}.sheet-tab.active{color:#fff;background:var(--sheet);border-color:var(--sheet)}.sheet-frame{min-height:0;flex:1;overflow:auto;padding:12px}.sheet-paper{display:inline-block;min-width:100%;background:#fff;color:#111827;box-shadow:0 5px 18px rgba(15,23,42,.09);transform-origin:top left}.xlsx-shell.mobile .sheet-frame{padding:0}.xlsx-shell.mobile .sheet-paper{box-shadow:none}.sheet-grid{border-collapse:separate;border-spacing:0;font-size:12px;min-width:100%}.sheet-grid th,.sheet-grid td{border-right:1px solid #d6dde8;border-bottom:1px solid #d6dde8;min-width:72px;height:28px;padding:4px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}.sheet-grid thead th{position:sticky;top:0;z-index:3;background:#eef2f7;color:#475569;text-align:center}.sheet-grid .row-head{position:sticky;left:0;z-index:2;background:#eef2f7;color:#64748b;min-width:42px;width:42px;text-align:center}.sheet-grid thead .row-head{z-index:4}.sheet-cell.formula{background:#fffdf0}.sheet-info{font-size:.7rem;color:var(--muted);padding:5px 11px;background:var(--surface);border-top:1px solid var(--line)}
+/* PPTX */
+.pptx-shell{height:100%;display:grid;grid-template-columns:170px 1fr;background:#111827}.pptx-thumbs{overflow:auto;padding:10px;border-right:1px solid #283244;background:#0b1220}.pptx-thumb{width:100%;aspect-ratio:16/9;border:2px solid transparent;border-radius:8px;background:#fff;margin-bottom:9px;overflow:hidden;cursor:pointer;position:relative}.pptx-thumb.active{border-color:#60a5fa}.pptx-thumb span{position:absolute;left:5px;bottom:4px;background:rgba(15,23,42,.72);color:#fff;border-radius:5px;padding:2px 5px;font-size:.55rem}.pptx-main{min-width:0;display:flex;align-items:center;justify-content:center;overflow:auto;padding:18px}.pptx-slide-wrap{position:relative;background:#fff;box-shadow:0 12px 36px rgba(0,0,0,.35);transform-origin:center center;overflow:hidden}.pptx-shape{position:absolute;overflow:hidden}.pptx-shape-text{white-space:pre-wrap;overflow:hidden}.pptx-shape img{width:100%;height:100%;object-fit:contain}.pptx-table{width:100%;height:100%;border-collapse:collapse;font-size:12px}.pptx-table td{border:1px solid #aab4c4;padding:4px}.pptx-fallback-note{position:absolute;right:10px;bottom:10px;background:rgba(15,23,42,.72);color:#fff;padding:5px 8px;border-radius:8px;font-size:.6rem}.pptx-online-host{width:100%;height:100%;overflow:auto;background:#111827}
+/* PDF */
+.pdf-shell{height:100%;display:grid;grid-template-columns:150px 1fr;background:#2b3038}.pdf-thumbs{padding:10px;overflow:auto;background:#20252c;border-right:1px solid #3c434d}.pdf-thumb{background:#fff;margin-bottom:9px;border-radius:5px;padding:3px;cursor:pointer}.pdf-thumb canvas{display:block;width:100%;height:auto}.pdf-thumb span{display:block;color:#cbd5e1;text-align:center;background:#20252c;font-size:.6rem;padding-top:3px}.pdf-pages{overflow:auto;padding:18px;scroll-behavior:smooth}.pdf-page{margin:0 auto 16px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.26);width:max-content;position:relative}.pdf-page canvas{display:block}.pdf-native{width:100%;height:100%;border:0;background:white}.pdf-fallback{height:100%;display:flex;flex-direction:column}.pdf-fallback-bar{padding:8px 12px;background:#fff;color:#334155;font-size:.75rem;border-bottom:1px solid #ddd}.search-box{display:flex;align-items:center;gap:6px}.search-box input{border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text);padding:6px 9px;font-size:.72rem;min-width:180px}.mini-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:9px;padding:6px 9px;font-size:.7rem;cursor:pointer}
+.about-dialog{border:1px solid var(--line);border-radius:24px;background:var(--surface);color:var(--text);padding:28px;width:min(460px,calc(100% - 28px));box-shadow:0 30px 90px rgba(0,0,0,.32)}.about-dialog::backdrop{background:rgba(5,10,20,.52);backdrop-filter:blur(5px)}.dialog-close{position:absolute;right:14px;top:12px;border:0;background:transparent;color:var(--muted);font-size:1.7rem;cursor:pointer}.about-logo{width:64px;height:64px;border-radius:18px}.about-dialog h2{margin:12px 0 3px}.about-dialog>p{margin:0 0 16px;color:var(--muted)}.about-grid{display:grid;grid-template-columns:82px 1fr;gap:8px;font-size:.76rem;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:12px}.about-grid span:nth-child(odd){font-weight:800}.about-dialog small{color:var(--muted);line-height:1.5}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);background:#111827;color:#fff;border-radius:12px;padding:10px 14px;font-size:.76rem;box-shadow:0 12px 34px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.2s;z-index:100}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:820px){.hero-card{grid-template-columns:1fr;min-height:auto}.hero-orb{display:none}.format-grid{grid-template-columns:repeat(2,1fr)}.recent-list{grid-template-columns:1fr}.file-identity{max-width:30vw}.engine-badge{display:none}.zoom-group{display:none}.viewer-toolbar{gap:6px}.pptx-shell{grid-template-columns:1fr}.pptx-thumbs{display:none}.pdf-shell{grid-template-columns:1fr}.pdf-thumbs{display:none}.docx-shell.print{padding:16px 8px 60px}.docx-shell.print .docx-document{transform-origin:top left}.segmented button{padding:6px 8px}}
+@media(max-width:480px){.home-screen{width:min(100% - 20px,1180px);padding-top:12px}.topbar{height:66px;padding:9px 12px}.brand-icon{width:40px;height:40px}.hero-card{padding:24px;border-radius:24px}.hero-copy h1{font-size:2rem}.format-card{padding:12px;min-height:88px;gap:10px}.format-icon{width:43px;height:43px}.format-card small{font-size:.63rem}.viewer-toolbar{min-height:58px;padding:7px}.file-identity{max-width:38vw}.viewer-toolbar>.icon-btn:last-child{display:none}.sub-toolbar{padding:5px 8px}.search-box input{min-width:130px}}
+
+/* ===== TG Office V0.12 refinements ===== */
+.viewer-toolbar{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;scrollbar-width:none}.viewer-toolbar::-webkit-scrollbar{display:none}.toolbar-spacer{min-width:4px}.pin-current.active{background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent)}.pin-current:disabled{opacity:.4;cursor:not-allowed}
+.recent-item{padding:0;overflow:hidden}.recent-open{border:0;background:transparent;color:var(--text);padding:13px 10px 13px 15px;display:flex;align-items:center;gap:11px;cursor:pointer;min-width:0;flex:1;text-align:left}.pin-action{border:0;border-left:1px solid var(--line);align-self:stretch;min-width:52px;background:var(--surface-2);color:var(--muted);cursor:pointer;font-size:.78rem}.pin-action.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}.pinned-section{margin-top:26px}.pinned-item{border-color:color-mix(in srgb,var(--accent) 28%,var(--line))}.pin-empty{background:color-mix(in srgb,var(--accent) 3%,var(--surface))}
+.sub-toolbar{scrollbar-width:none}.sub-toolbar::-webkit-scrollbar{display:none}.page-tools{display:flex;align-items:center;gap:6px;white-space:nowrap;margin-left:auto}.page-label,.search-status{font-size:.7rem;color:var(--muted);white-space:nowrap}.page-jump{width:58px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text);padding:6px 7px;font-size:.72rem}.search-box{white-space:nowrap}.search-box .search-status{min-width:40px}.tg-search-hit{background:#fde68a;color:#111827;border-radius:2px;padding:0 1px}.tg-search-hit.active{background:#fb923c;color:#111827;outline:2px solid #f97316}
+/* DOCX page model */
+.docx-shell.print{padding:20px 14px 72px;background:#dfe5ed;overflow:visible}.docx-print-wrap{min-width:100%;width:max-content;margin:0 auto}.docx-pages{width:max-content;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:18px;transform-origin:top center}.docx-pages.no-page-gap{gap:0}.docx-page{background:#fff;color:#111827;box-shadow:0 4px 18px rgba(15,23,42,.18);overflow:hidden;box-sizing:border-box;flex:none}.docx-pages.no-page-gap .docx-page{box-shadow:none;border-bottom:1px solid #d1d5db}.docx-page p,.docx-mobile-document p{margin:.48em 0;line-height:1.52}.docx-page table,.docx-mobile-document table{width:100%;border-collapse:collapse;margin:12px 0}.docx-page td,.docx-page th,.docx-mobile-document td,.docx-mobile-document th{border:1px solid #94a3b8;padding:6px 8px;vertical-align:top}.docx-page img,.docx-mobile-document img{max-width:100%;height:auto;vertical-align:middle}.docx-page .page-break{display:none}.docx-mobile-document{width:min(780px,100%);box-shadow:none;padding:10px clamp(10px,3vw,28px);background:transparent;color:var(--text);transform-origin:top center;margin:0 auto}.docx-mobile-document .page-break{display:none}
+/* XLSX search */
+.sheet-search-hit{background:#fef3c7!important}.sheet-search-active{background:#fdba74!important;outline:2px solid #f97316;outline-offset:-2px}
+/* PPT presentation */
+.pptx-slide-label{font-size:.72rem;color:var(--muted);min-width:84px;text-align:center}.present-btn{font-weight:700}.pptx-shell:fullscreen{width:100vw;height:100vh;grid-template-columns:1fr;background:#000}.pptx-shell:fullscreen .pptx-thumbs{display:none}.pptx-shell:fullscreen .pptx-main{padding:0;background:#000;overflow:hidden}.viewer-host:fullscreen{background:#000}
+/* PDF page controls */
+.pdf-pages.no-page-gap{padding-top:0;padding-bottom:0}.pdf-pages.no-page-gap .pdf-page{margin-bottom:0;box-shadow:none;border-bottom:1px solid #68707c}.pdf-page{scroll-margin-top:8px}
+@media(max-width:820px){.zoom-group{display:flex!important}.viewer-toolbar{gap:5px}.file-identity{max-width:24vw;min-width:86px}.zoom-group{gap:3px}.zoom-group .icon-btn.compact{width:30px;min-width:30px;height:30px}.zoom-group span{min-width:34px}.page-tools{margin-left:0}.sub-toolbar{gap:6px}.search-box input{min-width:145px}.docx-shell.print{padding:14px 8px 60px}.docx-print-wrap{min-width:100%}}
+@media(max-width:480px){.file-identity{max-width:27vw}.viewer-toolbar{padding:6px}.zoom-group span{font-size:.64rem}.page-jump{width:50px}.search-box input{min-width:126px}.pin-action{min-width:46px}}
+
+/* ===== TG Office V0.3 Power Viewer ===== */
+.share-open-btn{border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));background:color-mix(in srgb,var(--accent) 7%,var(--surface));color:var(--accent);height:38px;border-radius:11px;padding:0 11px;display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.7rem;white-space:nowrap;cursor:pointer}
+.share-open-btn:active{transform:translateY(1px)}
+.viewer-toolbar{overflow-x:auto;scrollbar-width:none}.viewer-toolbar::-webkit-scrollbar{display:none}
+.ppt-present-overlay{position:fixed;inset:0;z-index:500;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y}
+.ppt-present-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000}
+.ppt-present-stage>div{transform-origin:center center}
+.ppt-present-local-slide{position:relative!important;flex:none;box-shadow:none!important;transform-origin:center center!important}
+.ppt-present-controls{position:absolute;z-index:530;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:15px;background:rgba(10,15,25,.72);backdrop-filter:blur(10px);box-shadow:0 8px 28px rgba(0,0,0,.32)}
+.ppt-present-controls button{width:42px;height:38px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.11);color:#fff;font-size:1rem;cursor:pointer}
+.ppt-present-count{min-width:74px;text-align:center;color:#fff;font-size:.78rem;font-weight:800}
+.ppt-present-zone{position:absolute;z-index:510;top:0;bottom:0;width:22%;border:0;background:transparent;opacity:0}.ppt-present-zone.left{left:0}.ppt-present-zone.right{right:0}
+@media(max-width:640px){.share-open-text{display:none}.share-open-btn{width:38px;padding:0;justify-content:center;font-size:1rem}.viewer-toolbar{gap:5px}.file-identity{max-width:27vw}.ppt-present-controls{bottom:max(8px,env(safe-area-inset-bottom));gap:5px}.ppt-present-controls button{width:40px;height:36px}}
+
+/* ===== TG Office V0.311 Viewer Stability & Navigation ===== */
+.viewer-toolbar{overflow:visible!important;scrollbar-width:auto!important}
+.sub-toolbar{overflow:visible!important;flex-wrap:wrap;align-content:center;gap:5px;min-height:42px;padding:5px 8px}
+.search-box{display:flex;align-items:center;gap:4px;min-width:0;flex:1 1 230px}.search-box input{min-width:0!important;flex:1 1 120px;height:34px}.search-status{min-width:42px;text-align:center;font-weight:700}
+.page-tools,.ppt-nav-compact{display:flex;align-items:center;gap:4px;white-space:nowrap;margin-left:0}.compact-page-tools{flex:0 0 auto}.mini-btn{min-height:34px;padding:5px 8px}.page-jump{height:34px;width:54px;padding:5px 6px}
+.viewer-host{position:relative;touch-action:pan-x pan-y;overscroll-behavior:contain}
+.floating-position{position:fixed;z-index:90;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:rgba(15,23,42,.74);color:#fff;backdrop-filter:blur(8px);font-size:.72rem;font-weight:800;line-height:1;box-shadow:0 5px 18px rgba(0,0,0,.2);pointer-events:none}
+.exit-focus-btn{position:fixed;z-index:700;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));width:42px;height:42px;border:1px solid rgba(255,255,255,.22);border-radius:13px;background:rgba(15,23,42,.72);color:white;font-size:1.15rem;backdrop-filter:blur(8px)}
+.viewer-screen.focus-mode{background:var(--bg)}.viewer-screen.focus-mode .viewer-toolbar,.viewer-screen.focus-mode .sub-toolbar{display:none!important}.viewer-screen.focus-mode .viewer-stage{height:100vh;flex:1}.viewer-screen.focus-mode .floating-position{bottom:max(16px,env(safe-area-inset-bottom))}
+#fullscreenBtn.active{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border-color:var(--accent);color:var(--accent)}
+
+/* PDF: canvas is authoritative; text layer only powers search/highlight. */
+.pdf-page-stack{width:max-content;min-width:100%;display:flex;flex-direction:column;align-items:center;gap:16px;transform-origin:top center}
+.pdf-pages.no-page-gap .pdf-page-stack{gap:0}.pdf-pages.no-page-gap .pdf-page{margin-bottom:0;box-shadow:none;border-bottom:1px solid #68707c}
+.pdf-page{margin:0!important;overflow:hidden}.pdf-text-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2}.pdf-text-layer span{position:absolute;white-space:pre;line-height:1;color:transparent;transform-origin:0 0;border-radius:2px}.pdf-text-layer span.pdf-search-hit{background:rgba(250,204,21,.56);box-shadow:0 0 0 1px rgba(202,138,4,.18)}.pdf-text-layer span.pdf-search-hit.active{background:rgba(251,146,60,.72);outline:2px solid #f97316;outline-offset:1px}.pdf-page.pdf-page-hit{outline:3px solid #f59e0b;outline-offset:-3px}.pdf-page.pdf-page-hit.active{outline-color:#f97316}
+.pdf-thumb{border:0;display:block;width:100%;cursor:pointer}.pdf-thumb canvas{width:100%;height:auto}
+
+/* PPT: compact navigation + presentation is a separate, self-contained state. */
+.ppt-nav-compact{width:100%;justify-content:center}.ppt-jump{width:52px}.ppt-total{font-size:.72rem;color:var(--muted);min-width:42px}.present-btn{font-weight:800}
+.ppt-present-overlay{position:fixed!important;inset:0!important;z-index:1000!important;background:#000!important;overflow:hidden!important;display:block!important;touch-action:pan-y}
+.ppt-present-stage{position:absolute!important;inset:0!important;overflow:hidden!important;background:#000!important}.ppt-present-local-slide{box-shadow:none!important;margin:0!important;will-change:transform}
+.ppt-present-controls{z-index:1030}.ppt-present-zone{z-index:1010}.ppt-present-overlay.landscape-hint::after{content:'Putar perangkat ke landscape';position:absolute;z-index:1040;left:50%;top:16px;transform:translateX(-50%);padding:8px 12px;border-radius:12px;background:rgba(15,23,42,.82);color:#fff;font-size:.75rem;font-weight:700;white-space:nowrap}
+
+@media(max-width:640px){
+  .viewer-toolbar{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-rows:auto auto;gap:5px!important;padding:6px 7px!important;min-height:auto!important;align-items:center}
+  #backBtn{grid-column:1;grid-row:1}.file-identity{grid-column:2;grid-row:1;max-width:none!important;min-width:0!important}.engine-badge,.toolbar-spacer{display:none!important}
+  #shareOpenBtn{grid-column:3;grid-row:1}#fullscreenBtn{grid-column:4;grid-row:1;display:inline-flex!important}
+  #modeSwitch{grid-column:1/3;grid-row:2;justify-self:start}.zoom-group{grid-column:3/5;grid-row:2;justify-self:end;display:flex!important}
+  #modeSwitch.hidden{display:none!important}.viewer-toolbar:has(#modeSwitch.hidden) .zoom-group{grid-column:1/5;justify-self:center}
+  .sub-toolbar{padding:4px 6px}.search-box{flex-basis:100%}.page-tools,.ppt-nav-compact{flex:1 1 100%;justify-content:center}
+  .floating-position{bottom:max(10px,env(safe-area-inset-bottom));font-size:.68rem}
+}
+@media(max-width:420px){.mini-btn{padding:5px 7px}.page-jump{width:48px}.zoom-group span{min-width:32px}.segmented button{padding:5px 7px}}
+.pdf-text-layer mark.pdf-search-hit{color:transparent;background:rgba(250,204,21,.62);border-radius:2px;padding:0;margin:0}.pdf-text-layer mark.pdf-search-hit.active{background:rgba(251,146,60,.78);outline:2px solid #f97316;outline-offset:1px}
+
+/* ===== TG Office V0.32 Progressive Viewer ===== */
+
+.recent-copy small.recent-detail{display:block;margin-top:3px;color:var(--muted);font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recent-copy small.recent-detail:empty{display:none}
+
+/* Search stays compact. Result navigation only appears after a query. */
+.search-box.compact-search{flex:0 1 360px;width:min(360px,100%);max-width:100%;white-space:nowrap}.search-box.compact-search input{flex:1 1 150px;min-width:110px!important}.search-results{display:flex;align-items:center;gap:4px}.search-results .search-status{min-width:36px}.clear-search{font-size:1rem;line-height:1}
+.sub-toolbar{justify-content:flex-start}.sub-toolbar>.page-tools{margin-left:auto}
+
+/* Interactive floating page/slide navigator. */
+.floating-position.floating-nav{pointer-events:auto;display:flex;align-items:center;gap:5px;padding:5px 7px;line-height:1}.floating-nav button{border:0;background:rgba(255,255,255,.12);color:#fff;width:30px;height:28px;border-radius:8px;font-size:1rem;display:grid;place-items:center}.floating-nav .floating-count{min-width:52px;text-align:center}.floating-nav label{display:flex;align-items:center;gap:4px;font-size:.65rem;font-weight:700;color:#e2e8f0}.floating-nav input{width:44px;height:27px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;border-radius:7px;text-align:center;padding:2px 4px;font-size:.68rem;outline:none}.floating-nav input::-webkit-inner-spin-button{display:none}
+
+/* Progressive PDF */
+.render-progress{position:absolute;z-index:86;right:12px;top:10px;background:rgba(15,23,42,.78);color:#fff;padding:6px 9px;border-radius:999px;font-size:.66rem;font-weight:800;backdrop-filter:blur(8px);box-shadow:0 5px 18px rgba(0,0,0,.16);pointer-events:none}.render-progress.complete{background:rgba(22,101,52,.82)}
+.pdf-page-placeholder{display:grid;place-items:center;background:#fff}.page-skeleton{width:100%;height:100%;background:linear-gradient(100deg,#f1f5f9 20%,#fff 40%,#f1f5f9 60%);background-size:240% 100%;animation:tgShimmer 1.4s infinite linear}.thumb-skeleton{width:100%;aspect-ratio:3/4;background:linear-gradient(100deg,#e5e7eb 20%,#fff 40%,#e5e7eb 60%);background-size:240% 100%;animation:tgShimmer 1.4s infinite linear}.page-render-error{display:grid;place-items:center;width:100%;height:100%;color:#b91c1c;font-size:.72rem}@keyframes tgShimmer{to{background-position:-240% 0}}
+.pdf-text-layer{pointer-events:none}.pdf-search-rect{position:absolute;display:block;background:rgba(250,204,21,.55);box-shadow:0 0 0 1px rgba(202,138,4,.2);transform-origin:0 0;border-radius:2px}.pdf-search-rect.active{background:rgba(251,146,60,.78);outline:2px solid #f97316;outline-offset:1px}
+.pdf-thumb.active{outline:3px solid #60a5fa;outline-offset:-2px}.pdf-thumb.thumb-placeholder{opacity:.75}
+
+/* DOCX page thumbnails in landscape print view */
+.docx-print-layout{display:grid;grid-template-columns:minmax(0,1fr);width:max-content;min-width:100%;align-items:start}.docx-thumbs{display:none;background:#d5dce6;border-right:1px solid #bcc7d5;padding:8px;position:sticky;top:0;height:100vh;overflow:auto;z-index:3}.docx-thumb{display:block;width:112px;margin:0 auto 9px;padding:4px;border:2px solid transparent;border-radius:7px;background:#fff;overflow:hidden}.docx-thumb.active{border-color:#3b82f6}.docx-thumb-preview{width:102px;height:144px;overflow:hidden;background:#fff;position:relative}.docx-thumb-page{transform:scale(.128);transform-origin:top left!important;box-shadow:none!important}.docx-thumb>span{display:block;padding-top:3px;font-size:.6rem;color:#475569}.docx-print-wrap{min-width:0}
+
+/* PPT thumbnail pane remains visible in landscape, even on phone/tablet. */
+.pptx-thumb-viewport{width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;background:#fff}.pptx-thumb-slide{transform:scale(.118);transform-origin:top left!important;box-shadow:none!important}.pptx-thumb.active{border-color:#60a5fa}.ppt-toolbar-actions{display:flex;align-items:center;gap:6px}
+
+@media(orientation:landscape){
+  .pdf-shell{grid-template-columns:150px 1fr}.pdf-thumbs{display:block!important}
+  .docx-shell.print .docx-print-layout{grid-template-columns:132px minmax(0,1fr)}.docx-shell.print .docx-thumbs{display:block}
+  .pptx-shell{grid-template-columns:150px 1fr}.pptx-thumbs{display:block!important}
+  .search-box.compact-search{flex:0 1 330px;width:330px;max-width:42vw}
+}
+@media(orientation:landscape) and (max-height:520px){.pdf-shell{grid-template-columns:112px 1fr}.docx-shell.print .docx-print-layout{grid-template-columns:108px minmax(0,1fr)}.docx-thumbs{padding:5px}.docx-thumb{width:90px}.docx-thumb-preview{width:80px;height:113px}.docx-thumb-page{transform:scale(.101)}.pptx-shell{grid-template-columns:116px 1fr}}
+@media(max-width:640px) and (orientation:portrait){.search-box.compact-search{flex:0 1 250px;width:min(250px,70vw)}.sub-toolbar>.page-tools{margin-left:0}.floating-position.floating-nav{max-width:calc(100vw - 16px)}.floating-nav label{font-size:0}.floating-nav label::before{content:'Ke';font-size:.62rem}.floating-nav input{width:38px}}
+
+/* V0.321 stability: toolbar always visible; DOCX thumbnails removed. */
+.docx-thumbs{display:none!important}.docx-print-layout,.docx-shell.print .docx-print-layout{grid-template-columns:minmax(0,1fr)!important}.docx-print-wrap{width:100%}
+
+/* ===== TG Office V0.322 Core Viewer Fix ===== */
+/* PDF: virtualized pages use static placeholders to avoid hundreds of shimmer animations. */
+.page-placeholder-label{width:100%;height:100%;display:grid;place-items:center;background:#f8fafc;color:#94a3b8;font-size:.72rem;font-weight:700;letter-spacing:.02em}
+.thumb-placeholder-label{width:100%;aspect-ratio:3/4;display:grid;place-items:center;background:#e9eef5;color:#64748b;font-size:.7rem;font-weight:800}
+.pdf-page-placeholder{contain:layout paint style}
+
+/* PPT enhanced renderer owns the slide layout. Do not apply the old flex/list layout to it. */
+.pptx-main.pptx-enhanced-main{display:block!important;padding:0!important;overflow:hidden!important;position:relative;background:#111827}
+.enhanced-thumb-host{display:block;position:relative;background:#fff}
+.pptx-thumb-loading{width:100%;height:100%;display:grid;place-items:center;background:#f1f5f9;color:#94a3b8;font-weight:800}
+
+/* Presentation renders the same enhanced slide model into a dedicated host. */
+.ppt-present-render-host{position:relative!important;flex:none!important;transform-origin:center center!important;will-change:transform}
+.ppt-present-render-host>*{max-width:none!important}
+
+/* ===== TG Office V0.323 Viewer Polish ===== */
+/* PPT portrait: thumbnails become a horizontal filmstrip below the slide. */
+@media (max-width:820px) and (orientation:portrait){
+  .pptx-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;grid-template-areas:'pptmain' 'pptthumbs'!important;min-height:0}
+  .pptx-main{grid-area:pptmain;min-height:0!important}
+  .pptx-thumbs{grid-area:pptthumbs;display:flex!important;flex-direction:row!important;gap:8px!important;height:108px!important;min-height:108px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:7px 8px!important;border-right:0!important;border-top:1px solid #283244!important;background:#0b1220!important;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  .pptx-thumb{flex:0 0 142px!important;width:142px!important;height:80px!important;aspect-ratio:16/9!important;margin:0!important;scroll-snap-align:center}
+  .pptx-thumb span{font-size:.55rem!important}
+}
+
+/* PPT presentation: unobtrusive transparent side navigation + close button. */
+.ppt-present-nav{position:absolute;z-index:1040;top:50%;transform:translateY(-50%);width:54px;height:92px;border:0;border-radius:18px;background:rgba(15,23,42,.22);color:rgba(255,255,255,.86);font-size:2.15rem;font-weight:300;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(3px);opacity:.58;transition:opacity .16s ease,background .16s ease}
+.ppt-present-nav.prev{left:max(10px,env(safe-area-inset-left))}.ppt-present-nav.next{right:max(10px,env(safe-area-inset-right))}.ppt-present-nav:active,.ppt-present-nav:hover{opacity:.95;background:rgba(15,23,42,.46)}
+.ppt-present-close{position:absolute;z-index:1050;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));width:42px;height:42px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(15,23,42,.34);color:#fff;font-size:1.15rem;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(5px)}
+.ppt-present-count{position:absolute;z-index:1045;left:50%;bottom:max(13px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:62px;padding:6px 10px;border-radius:14px;background:rgba(15,23,42,.38);color:#fff;text-align:center;font-size:.72rem;font-weight:800;backdrop-filter:blur(5px)}
+.ppt-present-controls,.ppt-present-zone{display:none!important}
+@media(max-width:640px){.ppt-present-nav{width:46px;height:78px;font-size:1.9rem}.ppt-present-close{width:38px;height:38px}.ppt-present-count{bottom:max(9px,env(safe-area-inset-bottom))}}
+
+
+/* ===== TG Office V0.324 Final Viewer UI Polish ===== */
+/* XLSX search: one compact row; result arrows never stack. */
+.sub-toolbar.xlsx-subtoolbar{flex-wrap:nowrap!important;overflow:hidden!important;align-items:center}
+.xlsx-subtoolbar .xlsx-search-box{flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0!important;flex-wrap:nowrap!important}
+.xlsx-subtoolbar .xlsx-search-box input{min-width:72px!important}
+.xlsx-subtoolbar .search-results{flex:0 0 auto;flex-wrap:nowrap!important}
+.xlsx-subtoolbar .search-nav-btn{width:32px;min-width:32px;padding-left:0;padding-right:0}
+.xlsx-subtoolbar .xlsx-fit-btn{flex:0 0 auto;white-space:nowrap}
+
+/* DOCX print controls share one horizontal row with Search. */
+.sub-toolbar.docx-subtoolbar{display:grid!important;grid-template-columns:minmax(130px,1fr) auto;align-items:center;gap:6px;overflow:hidden!important;flex-wrap:nowrap!important}
+.docx-subtoolbar .docx-search-box{width:100%!important;max-width:none!important;min-width:0!important;flex:1 1 auto!important;flex-wrap:nowrap!important}
+.docx-subtoolbar .docx-search-box input{min-width:64px!important}
+.docx-subtoolbar .docx-page-tools{margin-left:0!important;display:flex;gap:4px;flex-wrap:nowrap}
+.docx-subtoolbar .docx-page-tools .mini-btn{padding-inline:7px;white-space:nowrap}
+.docx-subtoolbar .mini-btn.active{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border-color:color-mix(in srgb,var(--accent) 42%,var(--line));color:var(--accent);font-weight:800}
+
+/* PPT: Search + actions in the top strip, while the stage/filmstrip use empty portrait space better. */
+.sub-toolbar.pptx-subtoolbar{flex-wrap:nowrap!important;overflow:hidden!important;align-items:center}
+.pptx-subtoolbar .pptx-search-box{flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0!important;flex-wrap:nowrap!important}
+.pptx-subtoolbar .pptx-search-box input{min-width:72px!important}
+.pptx-subtoolbar .search-results{flex:0 0 auto;flex-wrap:nowrap!important}
+.pptx-subtoolbar .ppt-toolbar-actions{flex:0 0 auto;white-space:nowrap}
+.pptx-thumb.search-match{box-shadow:inset 0 0 0 2px #f59e0b}
+.pptx-thumb.search-match.active{border-color:#60a5fa;box-shadow:inset 0 0 0 2px #f59e0b,0 0 0 1px #60a5fa}
+
+@media (max-width:820px) and (orientation:portrait){
+  .pptx-shell{height:100%;box-sizing:border-box;padding-bottom:58px!important;grid-template-rows:minmax(0,1fr) 126px!important}
+  .pptx-thumbs{height:126px!important;min-height:126px!important;padding:8px 10px!important;gap:10px!important;align-items:center}
+  .pptx-thumb{flex:0 0 164px!important;width:164px!important;height:92px!important}
+  .pptx-thumb-viewport{height:92px!important}
+}
+@media(max-width:520px){
+  .sub-toolbar.docx-subtoolbar{grid-template-columns:minmax(112px,1fr) auto;gap:4px;padding-inline:5px}
+  .docx-subtoolbar .docx-page-tools .mini-btn{font-size:.62rem;padding-inline:5px}
+  .docx-subtoolbar .docx-search-box .mini-btn{padding-inline:6px}
+  .pptx-subtoolbar .ppt-toolbar-actions .mini-btn{font-size:.62rem;padding-inline:6px}
+  .pptx-subtoolbar .pptx-search-box .mini-btn{padding-inline:6px}
+  .xlsx-subtoolbar .mini-btn{padding-inline:6px}
+}
+
+
+/* ===== TG Office V0.326 Viewer Quality & Layout Fix ===== */
+/* PDF toolbar: Search + Gap/Fit must remain one compact row. */
+.sub-toolbar.pdf-subtoolbar{
+  display:grid!important;
+  grid-template-columns:minmax(118px,1fr) auto!important;
+  align-items:center!important;
+  gap:6px!important;
+  overflow:hidden!important;
+  flex-wrap:nowrap!important;
+}
+.pdf-subtoolbar .pdf-search-box{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  flex-wrap:nowrap!important;
+}
+.pdf-subtoolbar .pdf-search-box input{min-width:62px!important}
+.pdf-subtoolbar .compact-page-tools{
+  margin-left:0!important;
+  display:flex!important;
+  flex:0 0 auto!important;
+  gap:4px!important;
+  flex-wrap:nowrap!important;
+}
+.pdf-subtoolbar .compact-page-tools .mini-btn{white-space:nowrap;padding-inline:7px}
+
+/* DOCX/XLSX fit states are real scale modes, not visual-only labels. */
+.docx-print-wrap{display:flex;justify-content:center;min-width:100%}
+.docx-pages{transform-origin:top center}
+.xlsx-fit-btn.active,
+.docx-page-tools .mini-btn.active{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border-color:color-mix(in srgb,var(--accent) 42%,var(--line));color:var(--accent);font-weight:800}
+
+/* PPT search highlight is an overlay so it also works with SVG/HTML renderers. */
+.ppt-search-overlay{
+  position:absolute;inset:0;z-index:40;pointer-events:none;overflow:hidden;
+}
+.ppt-search-highlight{
+  position:absolute;display:block;border-radius:4px;
+  background:rgba(250,204,21,.42);
+  outline:2px solid rgba(245,158,11,.82);
+  box-shadow:0 0 0 1px rgba(255,255,255,.35) inset;
+  mix-blend-mode:multiply;
+}
+
+/* Portrait PPT: use the empty middle area; slide sits lower, centered horizontally, larger filmstrip. */
+@media (max-width:820px) and (orientation:portrait){
+  .pptx-shell{
+    grid-template-rows:minmax(0,1fr) 156px!important;
+    padding-bottom:58px!important;
+  }
+  .pptx-main{position:relative!important}
+  .pptx-main.pptx-enhanced-main{
+    padding-top:clamp(56px,11vh,132px)!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    padding-bottom:10px!important;
+    text-align:center!important;
+  }
+  .pptx-main.pptx-enhanced-main>*{
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .pptx-thumbs{
+    height:156px!important;min-height:156px!important;
+    padding:10px 12px 14px!important;gap:12px!important;
+    align-items:center!important;
+  }
+  .pptx-thumb{
+    flex:0 0 196px!important;width:196px!important;height:110px!important;
+  }
+  .pptx-thumb-viewport{height:110px!important}
+}
+@media(max-width:480px){
+  .sub-toolbar.pdf-subtoolbar{grid-template-columns:minmax(94px,1fr) auto!important;gap:3px!important;padding-inline:4px!important}
+  .pdf-subtoolbar .compact-page-tools{gap:2px!important}
+  .pdf-subtoolbar .compact-page-tools .mini-btn{font-size:.58rem!important;padding-inline:4px!important}
+  .pdf-subtoolbar .pdf-search-box .mini-btn{padding-inline:5px!important}
+  .pptx-thumb{flex-basis:178px!important;width:178px!important;height:100px!important}
+  .pptx-thumb-viewport{height:100px!important}
+}
+
+
+/* ===== TG Office V0.326 Viewer Simplification + Real Slide Thumbnails ===== */
+/* DOCX/PDF expose one predictable fit action only: Fit Lebar. */
+.docx-page-tools .mini-btn[data-fitw],
+.pdf-subtoolbar .mini-btn[data-fitw]{font-weight:700}
+
+/* Enhanced PPT thumbnails render the real slide model (images/background/layout included). */
+.enhanced-thumb-host{position:relative!important;overflow:hidden!important;background:#fff!important}
+.pptx-real-thumb-stage{position:absolute!important;transform-origin:top left!important;pointer-events:none!important;will-change:transform}
+.pptx-real-thumb-stage *{pointer-events:none!important}
+
+/* ===== TG Office V0.327 PPT Viewer Polish ===== */
+/* Normal PPT viewer always preserves the original slide aspect ratio. */
+.pptx-main.pptx-enhanced-main{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:auto!important;
+  padding:16px!important;
+  text-align:initial!important;
+  background:#111827!important;
+}
+.pptx-live-stage{
+  position:relative!important;
+  flex:0 0 auto!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  box-shadow:0 12px 36px rgba(0,0,0,.34);
+  max-width:none!important;
+  max-height:none!important;
+}
+.pptx-live-stage>*{
+  max-width:none!important;
+  max-height:none!important;
+}
+@media (max-width:820px) and (orientation:portrait){
+  .pptx-main.pptx-enhanced-main{
+    padding:14px 10px!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  .pptx-main.pptx-enhanced-main>*{
+    margin:0!important;
+  }
+}
+
+/* PPT toolbar is intentionally simple: Search + Presentasi. */
+.pptx-subtoolbar .ppt-toolbar-actions{display:flex!important;align-items:center!important;gap:6px!important}
+
+/* Presentation HUD appears on tap; side arrows and X remain unobtrusive and always available. */
+.ppt-present-hud{
+  position:absolute;
+  z-index:1060;
+  left:50%;
+  bottom:max(16px,env(safe-area-inset-bottom));
+  transform:translate(-50%,12px);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 9px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:15px;
+  background:rgba(15,23,42,.58);
+  color:#fff;
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 28px rgba(0,0,0,.24);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .16s ease,transform .16s ease;
+}
+.ppt-present-hud.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.ppt-present-hud .ppt-present-count{
+  position:static!important;
+  left:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  min-width:72px!important;
+  padding:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#fff!important;
+  font-size:.72rem!important;
+  font-weight:800!important;
+  backdrop-filter:none!important;
+}
+.ppt-present-hud label{display:flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;color:#e2e8f0}
+.ppt-present-hud input{
+  width:48px;height:30px;padding:2px 4px;
+  border:1px solid rgba(255,255,255,.28);border-radius:8px;
+  background:rgba(255,255,255,.12);color:#fff;text-align:center;outline:none;
+  font-size:.72rem;font-weight:700;
+}
+.ppt-present-hud input::-webkit-inner-spin-button{display:none}
+.ppt-present-hud button{
+  width:32px;height:30px;border:0;border-radius:8px;
+  background:rgba(255,255,255,.14);color:#fff;font-size:.92rem;display:grid;place-items:center
+}
+@media(max-width:640px){
+  .ppt-present-hud{gap:6px;padding:6px 7px;bottom:max(10px,env(safe-area-inset-bottom))}
+  .ppt-present-hud .ppt-present-count{min-width:64px!important;font-size:.68rem!important}
+  .ppt-present-hud input{width:42px;height:28px}
+  .ppt-present-hud button{width:30px;height:28px}
+}
+
+/* V0.4 Google Drive */
+.drive-hero-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(8px)}
+.drive-g,.drive-mark{display:inline-grid;place-items:center;font-weight:900;font-family:Arial,sans-serif}
+.drive-g{width:22px;height:22px;border-radius:7px;background:#fff;color:#2563eb}
+.cloud-section{margin-top:28px}.cloud-card{display:flex;align-items:center;gap:16px;padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.cloud-brand{display:flex;align-items:center;gap:14px;min-width:0;flex:1}.cloud-brand h2{margin:3px 0 4px;font-size:1.08rem}.cloud-brand p{margin:0;color:var(--muted);font-size:.78rem}.drive-mark{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#4285f4 0 34%,#34a853 34% 67%,#fbbc04 67%);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.cloud-open-btn{border:1px solid #bfd1f7;background:#edf4ff;color:#1d4ed8;border-radius:13px;padding:11px 15px;font-weight:800;cursor:pointer}.cloud-open-btn:disabled,.drive-hero-btn:disabled{opacity:.55;cursor:wait}.cloud-heading{margin-top:16px}.cloud-type{background:linear-gradient(135deg,#2563eb,#16a34a)!important}.recent-open{display:flex;align-items:center;gap:11px;flex:1;min-width:0;border:0;background:transparent;padding:0;text-align:left;color:inherit;cursor:pointer}.cloud-recent-item{cursor:default}.cloud-empty{background:linear-gradient(135deg,var(--surface),rgba(66,133,244,.05))}
+@media(max-width:680px){.cloud-card{align-items:flex-start;flex-wrap:wrap}.cloud-open-btn{width:100%}.drive-mark{width:44px;height:44px}.cloud-brand p{line-height:1.4}}
+
+/* V0.41 Cloud Viewer */
+.cloud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cloud-grid .cloud-card{height:100%}.onedrive-mark{width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#0a64c9,#27a8f2);color:white;display:grid;place-items:center;font-size:1.5rem;font-weight:900;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}.onedrive-mark-mini{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:7px;background:#0a64c9;color:#fff;margin-right:4px}.onedrive-hero-btn{background:#eef6ff;color:#0b4f9c}.onedrive-open-btn{border-color:#9dc8ef;background:#edf7ff;color:#075da8}.section-actions{display:flex;align-items:center;gap:10px}.cloud-type-g{background:linear-gradient(135deg,#2563eb,#16a34a)!important}.cloud-type-o{background:linear-gradient(135deg,#0a64c9,#27a8f2)!important}.recent-detail{display:block}.hidden{display:none!important}
+.onedrive-dialog{width:min(780px,calc(100vw - 24px));max-height:min(82vh,760px);border:1px solid var(--line);border-radius:22px;padding:0;background:var(--surface);color:var(--text);box-shadow:0 28px 90px rgba(15,23,42,.34);overflow:hidden}.onedrive-dialog::backdrop{background:rgba(2,6,23,.55);backdrop-filter:blur(3px)}.onedrive-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--line)}.onedrive-dialog-head h2{margin:3px 0 2px}.onedrive-dialog-head small{color:var(--muted)}.od-close{position:static}.onedrive-tools{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}.onedrive-breadcrumb{display:flex;align-items:center;gap:5px;min-width:0;flex:1;overflow-x:auto;white-space:nowrap}.od-crumb{border:0;background:transparent;color:var(--accent);font-weight:750;cursor:pointer;padding:7px 5px}.onedrive-search{width:min(220px,32vw);border:1px solid var(--line);border-radius:11px;padding:9px 11px;background:var(--surface);color:var(--text)}.onedrive-list{padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-height:260px;max-height:52vh;overflow:auto}.od-item{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);display:flex;align-items:center;gap:11px;padding:11px 12px;text-align:left;cursor:pointer;min-width:0}.od-item:hover{border-color:#9db3d7}.od-item.selected{border-color:#4b8be8;box-shadow:inset 0 0 0 1px #4b8be8;background:color-mix(in srgb,#4b8be8 7%,var(--surface))}.od-item-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);font-size:.72rem;font-weight:900;flex:0 0 auto}.od-item-copy{min-width:0}.od-item-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.84rem}.od-item-copy small{display:block;color:var(--muted);font-size:.7rem;margin-top:4px}.od-empty{grid-column:1/-1;display:grid;place-items:center;min-height:180px;color:var(--muted);text-align:center;padding:24px}.onedrive-dialog-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}.od-hint{font-size:.72rem;color:var(--muted)}.od-open-selected:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:760px){.cloud-grid{grid-template-columns:1fr}.onedrive-tools{flex-wrap:wrap}.onedrive-breadcrumb{order:1;flex-basis:calc(100% - 52px)}.onedrive-search{order:2;width:100%}.onedrive-list{grid-template-columns:1fr;max-height:50vh}.onedrive-dialog-foot{align-items:stretch;flex-direction:column}.od-open-selected{width:100%}.section-actions{gap:4px}}
+
+/* ===== TG Office V0.413 Public Ready + Cloud Motion ===== */
+.brand-icon,.about-logo{background:#0e2b83}
+.hero-card{
+  background:
+    radial-gradient(circle at 82% 22%,rgba(75,163,255,.44),transparent 28%),
+    radial-gradient(circle at 58% 78%,rgba(92,69,255,.18),transparent 34%),
+    linear-gradient(135deg,#081535 0%,#102e82 52%,#1e2e98 100%);
+}
+.hero-card:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.045) 47%,transparent 68%);pointer-events:none}
+.hero-orb{
+  width:min(340px,72vw);aspect-ratio:1;border:0;box-shadow:none;isolation:isolate;overflow:visible;
+  background:radial-gradient(circle at 50% 50%,rgba(52,126,255,.14),transparent 59%);
+}
+.hero-orbit-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 12px rgba(88,189,255,.16));z-index:1}
+.orbit-line,.orbit-swoop{vector-effect:non-scaling-stroke}
+.orb-core{
+  position:absolute;left:50%;top:50%;width:124px;height:124px;border-radius:34px;background:transparent;box-shadow:0 22px 60px rgba(1,14,54,.42),0 0 52px rgba(77,164,255,.22);overflow:hidden;z-index:6;transform:translate(-50%,-50%);will-change:transform;
+}
+.orb-core img{width:100%;height:100%;display:block}
+.orb-shine{position:absolute;top:-18%;left:-38%;width:34%;height:138%;border-radius:999px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);filter:blur(1px);opacity:0;mix-blend-mode:screen;pointer-events:none;will-change:transform,opacity}
+.hero-orb .orbit-item{
+  left:0;top:0;width:66px;height:66px;border-radius:20px;position:absolute;display:grid;place-items:center;color:white;border:1px solid rgba(255,255,255,.26);box-shadow:0 14px 28px rgba(2,14,48,.22),inset 0 1px 0 rgba(255,255,255,.26);backdrop-filter:blur(10px);transform:translate3d(0,0,0);will-change:transform;z-index:3;
+}
+.hero-orb .orbit-item b{font-size:.72rem;letter-spacing:-.01em;text-shadow:0 1px 6px rgba(0,0,0,.28)}
+.hero-orb .orbit-doc{background:linear-gradient(145deg,rgba(31,108,255,.88),rgba(40,84,199,.64))}
+.hero-orb .orbit-sheet{background:linear-gradient(145deg,rgba(22,181,120,.88),rgba(7,116,98,.66))}
+.hero-orb .orbit-slide{background:linear-gradient(145deg,rgba(244,104,50,.9),rgba(197,65,31,.68))}
+.hero-orb .orbit-pdf{background:linear-gradient(145deg,rgba(238,63,91,.9),rgba(168,45,107,.66));font-size:inherit}
+.hero-orb .orbit-item:after{content:"";position:absolute;inset:7px;border-radius:14px;border:1px solid rgba(255,255,255,.13);pointer-events:none}
+
+.onedrive-tools{display:grid;grid-template-columns:auto minmax(120px,1fr) minmax(190px,250px) auto auto;gap:8px;align-items:center}
+.onedrive-search-wrap{position:relative;min-width:0}.onedrive-search{width:100%!important;padding-right:42px}.od-search-state{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.62rem;color:var(--muted);pointer-events:none}
+.onedrive-sort{height:36px;min-width:132px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:0 30px 0 10px;font-size:.72rem;font-weight:700}
+.od-sort-dir{font-weight:900;color:var(--accent)}
+.onedrive-list-wrap{position:relative;min-height:260px}.onedrive-list{min-height:260px}
+.onedrive-busy{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(7px);text-align:center;padding:26px}
+.onedrive-busy strong{font-size:.92rem}.onedrive-busy span{font-size:.72rem;color:var(--muted);max-width:360px}
+.od-item{position:relative}.od-item:after{content:"Buka";margin-left:auto;font-size:.62rem;font-weight:800;color:var(--accent);opacity:.68}.od-item:has(.od-item-icon:first-child){ }
+.od-item.folder-item:after{content:"Masuk ›"}.od-item.unsupported:after{content:"—";color:var(--muted)}
+.od-item-copy small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.od-item-modified{display:block;color:var(--muted);font-size:.64rem;margin-top:2px}
+
+@media(max-width:820px){
+  .hero-orb{display:grid!important;width:min(310px,78vw);margin-top:8px}
+  .orb-core{width:112px;height:112px;border-radius:31px}
+  .hero-orb .orbit-item{width:58px;height:58px;border-radius:18px}
+  .hero-orb .orbit-item b{font-size:.66rem}
+}
+@media(max-width:760px){
+  .onedrive-tools{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:'up crumb dir' 'search search search' 'sort sort sort';gap:8px}
+  #onedriveUp{grid-area:up}.onedrive-breadcrumb{grid-area:crumb;order:initial!important;flex-basis:auto!important}.od-sort-dir{grid-area:dir}.onedrive-search-wrap{grid-area:search}.onedrive-sort{grid-area:sort;width:100%}.onedrive-search{order:initial!important}.onedrive-list{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .hero-orb{width:min(286px,82vw)}
+  .orb-core{width:102px;height:102px;border-radius:29px}
+  .hero-orb .orbit-item{width:54px;height:54px;border-radius:17px}
+}
+@media(prefers-reduced-motion:reduce){.orb-shine{display:none}.orbit-line-b{stroke-dasharray:none!important}}
+
+/* V0.413 legal/publication surfaces */
+.legal-footer{margin-top:18px;padding:18px 4px 4px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--line);color:var(--muted)}
+.legal-footer-brand{display:flex;align-items:center;gap:10px;min-width:0}.legal-footer-brand img{width:34px;height:34px;border-radius:10px}.legal-footer-brand span{display:grid;gap:2px}.legal-footer-brand strong{color:var(--text);font-size:.88rem}.legal-footer-brand small{font-size:.72rem}.legal-footer-links{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.legal-footer-links a,.about-legal-links a{color:#2563eb;text-decoration:none;font-weight:800;font-size:.78rem}.legal-footer-links a:hover,.about-legal-links a:hover{text-decoration:underline}.about-legal-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:620px){.legal-footer{align-items:flex-start;flex-direction:column}.legal-footer-links{gap:12px}}

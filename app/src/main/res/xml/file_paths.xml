@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="temporary_pdf_shares" path="shares/" />
+    <cache-path name="staged_pdf_tests" path="pdf_stage/" />
+    <cache-path name="pdf_restart" path="pdf-restart/"/>
+</paths>

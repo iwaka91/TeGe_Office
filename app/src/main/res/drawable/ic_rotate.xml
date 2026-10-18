@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ponsel tegak (samar) berputar menjadi mendatar, dengan panah melengkung. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24"
+    android:tint="?android:attr/textColorPrimary">
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF"
+        android:strokeAlpha="0.45" android:strokeWidth="1.6"
+        android:pathData="M3.8,2.3h5.4a1.5,1.5 0,0 1,1.5 1.5v11.4H2.3V3.8a1.5,1.5 0,0 1,1.5 -1.5z"/>
+    <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
+        android:pathData="M8.5,12.5h12a2,2 0,0 1,2 2v5a2,2 0,0 1,-2 2h-12a2,2 0,0 1,-2 -2v-5a2,2 0,0 1,2 -2zM9.6,14.3v5.4h9.8v-5.4z"/>
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8" android:strokeLineCap="round"
+        android:pathData="M12.8,3.6c3.4,0 5.8,2 5.8,5.2"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M16.2,8.2L18.6,11.4 21,8.2z"/>
+</vector>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TgPdfLab" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- AndroidX PDF fragment needs Material colorOnSurface and textAppearanceBodyMedium. -->
+        <item name="colorPrimary">#1557B5</item>
+        <item name="colorPrimaryDark">#103A78</item>
+        <item name="colorAccent">#1557B5</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+
+    <!-- Dialog layar penuh untuk Thumbnail. -->
+    <style name="Theme.TgPdfLab.FullDialog" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#1557B5</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    </style>
+
+    <style name="ToolbarIcon">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="NavIcon">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="FloatIcon">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:padding">11dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:elevation">6dp</item>
+    </style>
+    <style name="EdgeIcon">
+        <item name="android:layout_width">34dp</item>
+        <item name="android:layout_height">46dp</item>
+        <item name="android:padding">7dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+</resources>

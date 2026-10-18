@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/readerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Toolbar: Buka PDF rata kiri, ikon di tengah, hamburger rata kanan. -->
+    <LinearLayout android:id="@+id/mainToolbar"
+        android:layout_width="match_parent" android:layout_height="56dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingStart="4dp" android:paddingEnd="4dp"
+        android:elevation="3dp">
+        <ImageButton android:id="@+id/openButton" style="@style/ToolbarIcon"
+            android:src="@drawable/ic_folder_open" android:contentDescription="Buka PDF"/>
+        <TextView android:id="@+id/titleText"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="2dp" android:layout_marginEnd="2dp"
+            android:singleLine="true" android:ellipsize="middle"
+            android:textSize="15sp" android:textStyle="bold" android:text="TG PDF Lab"/>
+        <ImageButton android:id="@+id/searchQuick" style="@style/ToolbarIcon"
+            android:src="@drawable/ic_search" android:contentDescription="Cari teks"/>
+        <ImageButton android:id="@+id/themeQuick" style="@style/ToolbarIcon" android:visibility="gone"
+            android:src="@drawable/ic_moon" android:contentDescription="Ganti tema"/>
+        <ImageButton android:id="@+id/soundQuick" style="@style/ToolbarIcon"
+            android:src="@drawable/ic_volume_on" android:visibility="gone"
+            android:contentDescription="Suara kertas Flipbook"/>
+        <ImageButton android:id="@+id/rotateQuick" style="@style/ToolbarIcon" android:visibility="gone"
+            android:src="@drawable/ic_rotate" android:contentDescription="Putar layar"/>
+        <ImageButton android:id="@+id/fullQuick" style="@style/ToolbarIcon" android:visibility="gone"
+            android:src="@drawable/ic_fullscreen" android:contentDescription="Layar penuh"/>
+        <ImageButton android:id="@+id/shareQuick" style="@style/ToolbarIcon" android:visibility="gone"
+            android:src="@drawable/ic_share" android:contentDescription="Bagikan PDF"/>
+        <ImageButton android:id="@+id/menuButton" style="@style/ToolbarIcon"
+            android:src="@drawable/ic_menu" android:contentDescription="Menu"/>
+    </LinearLayout>
+
+    <!-- Panel developer, tersembunyi. Tekan lama tombol menu untuk membuka. -->
+    <LinearLayout android:id="@+id/diagnosticPanel"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:visibility="gone">
+        <TextView android:id="@+id/deviceText"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp" android:textSize="10sp" android:maxLines="1"
+            android:ellipsize="end" android:text="Perangkat"/>
+        <HorizontalScrollView android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:scrollbars="none">
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:paddingHorizontal="4dp">
+                <Button android:id="@+id/logButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Diagnostik"/>
+                <Button android:id="@+id/copyLogButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Salin Log"/>
+                <Button android:id="@+id/sendLogButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kirim Log"/>
+                <Button android:id="@+id/fallbackButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Buka Eksternal"/>
+            </LinearLayout>
+        </HorizontalScrollView>
+        <TextView android:id="@+id/diagnosticsText" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:padding="10dp"
+            android:textSize="10sp" android:typeface="monospace"
+            android:maxLines="5" android:visibility="gone"/>
+    </LinearLayout>
+
+    <FrameLayout android:id="@+id/contentArea"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1">
+
+        <FrameLayout android:id="@+id/pdfContainer"
+            android:layout_width="match_parent" android:layout_height="match_parent"/>
+
+        <FrameLayout android:id="@+id/flipbookOverlay"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:visibility="gone">
+            <com.totogutomo.tgpdflab.PageCurlView android:id="@+id/flipView"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:contentDescription="Halaman Flipbook"/>
+        </FrameLayout>
+
+        <!-- Garis progres baca -->
+        <FrameLayout android:id="@+id/progressTrack"
+            android:layout_width="match_parent" android:layout_height="3dp"
+            android:layout_gravity="top">
+            <View android:id="@+id/progressFill"
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
+        </FrameLayout>
+
+        <!-- Chip status singkat -->
+        <TextView android:id="@+id/statusChip"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal" android:layout_marginTop="14dp"
+            android:layout_marginHorizontal="24dp"
+            android:paddingHorizontal="14dp" android:paddingVertical="7dp"
+            android:textSize="13sp" android:maxLines="2" android:ellipsize="end"
+            android:gravity="center" android:elevation="6dp" android:visibility="gone"/>
+
+        <!-- Lompat ke awal / akhir: muncul hanya saat menggulir -->
+        <LinearLayout android:id="@+id/edgeJump"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical" android:layout_marginEnd="4dp"
+            android:orientation="vertical" android:visibility="gone">
+            <ImageButton android:id="@+id/jumpFirst" style="@style/EdgeIcon"
+                android:src="@drawable/ic_first" android:contentDescription="Ke halaman awal"/>
+            <ImageButton android:id="@+id/jumpLast" style="@style/EdgeIcon"
+                android:layout_marginTop="14dp"
+                android:src="@drawable/ic_last" android:contentDescription="Ke halaman akhir"/>
+        </LinearLayout>
+
+        <!-- Navigasi melayang:  ‹  9/27  ⤵  ›  -->
+        <LinearLayout android:id="@+id/floatingNav" android:layout_width="wrap_content"
+            android:layout_height="48dp" android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="18dp" android:orientation="horizontal"
+            android:gravity="center_vertical" android:paddingHorizontal="4dp"
+            android:elevation="8dp">
+            <ImageButton android:id="@+id/floatPrev" style="@style/NavIcon"
+                android:src="@drawable/ic_chevron_left" android:contentDescription="Halaman sebelumnya"/>
+            <TextView android:id="@+id/floatPage" android:layout_width="wrap_content"
+                android:minWidth="64dp" android:layout_height="44dp"
+                android:paddingHorizontal="6dp"
+                android:text="—/—" android:textSize="14sp"
+                android:textStyle="bold" android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="Nomor halaman, ketuk untuk pindah halaman"/>
+            <ImageButton android:id="@+id/floatGoto" style="@style/NavIcon"
+                android:src="@drawable/ic_goto" android:contentDescription="Ke halaman…"/>
+            <ImageButton android:id="@+id/floatNext" style="@style/NavIcon"
+                android:src="@drawable/ic_chevron_right" android:contentDescription="Halaman berikutnya"/>
+        </LinearLayout>
+
+        <ImageButton android:id="@+id/soundFloat" style="@style/FloatIcon"
+            android:layout_gravity="top|end" android:layout_marginTop="12dp"
+            android:layout_marginEnd="68dp"
+            android:src="@drawable/ic_volume_on" android:visibility="gone"
+            android:contentDescription="Suara kertas Flipbook"/>
+        <ImageButton android:id="@+id/exitFullButton" style="@style/FloatIcon"
+            android:layout_gravity="top|end" android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_close" android:visibility="gone"
+            android:contentDescription="Keluar layar penuh"/>
+    </FrameLayout>
+</LinearLayout>

@@ -1,0 +1,78 @@
+name: Build TeGe Office Play Store AAB
+# Dijalankan manual (Actions > Run workflow, bila berkas ini sudah ada di branch utama)
+# atau dengan mendorong commit ke branch "play-release" (cara yang dipakai), atau tag "tegeoffice-play-*".
+# Hasil: berkas .aab bertanda tangan kunci unggah, paket final com.totogutomo.tgoffice,
+# untuk diunggah ke Google Play Console. Tidak menerbitkan rilis publik di GitHub.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - play-release
+    tags:
+      - 'tegeoffice-play-*'
+
+permissions:
+  contents: read
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      TG_UPLOAD_KEYSTORE_BASE64: ${{ secrets.TG_UPLOAD_KEYSTORE_BASE64 }}
+      TG_UPLOAD_STORE_PASSWORD: ${{ secrets.TG_UPLOAD_STORE_PASSWORD }}
+      TG_UPLOAD_KEY_ALIAS: ${{ secrets.TG_UPLOAD_KEY_ALIAS }}
+      TG_UPLOAD_KEY_PASSWORD: ${{ secrets.TG_UPLOAD_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare web assets (offline engines)
+        shell: bash
+        run: bash TG-Office-Integrated/scripts/prepare-web-assets.sh
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Restore Play upload key
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${TG_UPLOAD_KEYSTORE_BASE64:-}" ] || [ -z "${TG_UPLOAD_STORE_PASSWORD:-}" ] || [ -z "${TG_UPLOAD_KEY_ALIAS:-}" ]; then
+            echo "::error::Rahasia kunci unggah belum diisi (TG_UPLOAD_KEYSTORE_BASE64, TG_UPLOAD_STORE_PASSWORD, TG_UPLOAD_KEY_ALIAS)."
+            exit 1
+          fi
+          KS="$RUNNER_TEMP/tg-upload.jks"
+          printf '%s' "$TG_UPLOAD_KEYSTORE_BASE64" | tr -d ' \r\n\t' | base64 -d > "$KS"
+          keytool -list -keystore "$KS" -storepass "$TG_UPLOAD_STORE_PASSWORD" -alias "$TG_UPLOAD_KEY_ALIAS" > /dev/null
+          echo "TG_UPLOAD_KEYSTORE_PATH=$KS" >> "$GITHUB_ENV"
+      - name: Install Android SDK + extension 19
+        shell: bash
+        run: |
+          SDKROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then SDKMANAGER="$(find "$SDKROOT/cmdline-tools" -type f -name sdkmanager -print -quit)"; fi
+          test -n "$SDKMANAGER"
+          "$SDKMANAGER" --install "platforms;android-36" "platforms;android-36-ext19" "build-tools;36.0.0"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build signed release AAB
+        run: gradle -p TG-Office-Integrated :app:bundleRelease --no-daemon --stacktrace
+      - name: Verify AAB
+        shell: bash
+        run: |
+          set -euo pipefail
+          AAB=TG-Office-Integrated/app/build/outputs/bundle/release/app-release.aab
+          test -s "$AAB"
+          jarsigner -verify "$AAB" > /dev/null
+          ver=$(grep -oP "versionName '\K[^']+" TG-Office-Integrated/app/build.gradle)
+          cp "$AAB" "TeGe-Office-$ver-play.aab"
+          echo "AAB_NAME=TeGe-Office-$ver-play.aab" >> "$GITHUB_ENV"
+          ls -lh "TeGe-Office-$ver-play.aab"
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.AAB_NAME }}
+          path: ${{ env.AAB_NAME }}
+          retention-days: 30
