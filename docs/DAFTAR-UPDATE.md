@@ -26,6 +26,13 @@ Dicatat: 20 Oktober 2026. Status: **belum dikerjakan** (menunggu perintah "Updat
 4. **Menu "Bagikan" saat judul file ditekan**
    - Judul file di penampil (`viewerFileName`) saat ini hanya teks. Hubungkan ke fungsi bagikan yang sudah ada.
 
+5. **Bagikan sebagai PDF (Word, Excel, PowerPoint)**
+   - Kondisi sekarang: Bagikan hanya bisa sebagai file asli.
+   - Yang diinginkan: menu Bagikan punya dua pilihan, "Bagikan file asli" dan "Bagikan sebagai PDF".
+   - Cara (disepakati): jalur otomatis memakai pencetak PDF bawaan Android (cetak dari WebView), tanpa pustaka tambahan. Saat Bapak memilih "Bagikan sebagai PDF", muncul layar loading, lalu setelah PDF siap, menu bagikan Android terbuka.
+   - Yang perlu diperhatikan: hasil PDF mengikuti tampilan di penampil (pemotongan halaman Word, tabel Excel yang lebar, satu slide per halaman untuk PowerPoint). Nama file PDF mengikuti nama dokumen asli (sejalan dengan butir 1). Perlu diuji di HP, terutama dokumen panjang.
+   - Ukuran: sedang. Berkaitan dengan butir 1 dan 4.
+
 ## Catatan
 
 - Sebelum rilis ke Play Store: `versionCode` harus lebih besar dari rilis sebelumnya. Alur rilis ada di `.github/workflows/release-tg-office-play.yml` (cara alur itu menentukan `versionCode` belum diperiksa).
