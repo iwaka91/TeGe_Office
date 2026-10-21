@@ -33,7 +33,10 @@ Dicatat: 20 Oktober 2026. Status: **belum dikerjakan** (menunggu perintah "Updat
    - Yang perlu diperhatikan: hasil PDF mengikuti tampilan di penampil (pemotongan halaman Word, tabel Excel yang lebar, satu slide per halaman untuk PowerPoint). Nama file PDF mengikuti nama dokumen asli (sejalan dengan butir 1). Perlu diuji di HP, terutama dokumen panjang.
    - Ukuran: sedang. Berkaitan dengan butir 1 dan 4.
 
+6. **Bagian Tentang: nama pembuat**
+   - Tulis "Guru SMA Negeri 3 Maliku" di bawah nama pembuat pada bagian Tentang, bila belum sesuai.
+   - Dikerjakan pada update berikutnya.
+
 ## Catatan
 
 - Sebelum rilis ke Play Store: `versionCode` harus lebih besar dari rilis sebelumnya. Alur rilis ada di `.github/workflows/release-tg-office-play.yml` (cara alur itu menentukan `versionCode` belum diperiksa).
-- Pada update berikutnya, bagian Tentang perlu menuliskan "Guru SMA Negeri 3 Maliku" di bawah nama pembuat bila belum sesuai.
