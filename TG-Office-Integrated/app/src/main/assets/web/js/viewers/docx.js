@@ -418,7 +418,8 @@ export class DocxViewer{
       }
       let node=null;
       if(blip){
-        const url=await this._img(attr(blip,'embed'),ctx);if(!url)return;
+        let url=await this._img(attr(blip,'embed'),ctx);if(!url)return;
+        const fx=this._blipFx(blip);if(fx)url=await this._fxImg(url,fx);
         node=document.createElement('img');node.src=url;node.alt='Gambar dokumen';if(cx){node.style.width=(cx/9525)+'px';if(cy)node.style.aspectRatio=`${cx}/${cy}`}
       }else{
         const g=firstByLocal(anc,'prstGeom'),prst=A(g,'prst');
@@ -435,6 +436,35 @@ export class DocxViewer{
       const shp=firstByLocal(n,'shape'),sty=A(shp,'style')||'',gv=k=>{const m=new RegExp(k+':\\s*([\\d.]+)(pt|px|in)?').exec(sty);if(!m)return 0;return +m[1]*({pt:96/72,px:1,in:96}[m[2]||'px'])};
       const img=document.createElement('img');img.src=url;img.alt='Gambar dokumen';const w=gv('width'),h=gv('height');if(w){img.style.width=w+'px';if(h)img.style.aspectRatio=`${w}/${h}`}host.append(img);
     }
+  }
+  /* "Warna transparan" Word (clrChange): warna latar gambar (mis. kertas tanda tangan) dibuat tembus pandang. */
+  _blipFx(blip){
+    const cc=firstByLocal(blip,'clrChange');if(!cc)return null;
+    const from=firstByLocal(cc,'clrFrom'),to=firstByLocal(cc,'clrTo'),clr=from?firstByLocal(from,'srgbClr'):null,hex=clr?A(clr):'';
+    const alpha=to?firstByLocal(to,'alpha'):null;
+    if(!/^[0-9a-f]{6}$/i.test(hex||'')||!alpha||+A(alpha)!==0)return null;
+    const bl=firstByLocal(blip,'biLevel'),th=bl?(+A(bl,'thresh')||50000)/100000*255:null;
+    return{from:[parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)],thresh:th,key:hex+'|'+th};
+  }
+  async _fxImg(url,fx){
+    this.fxCache=this.fxCache||new Map();const key=url+'|'+fx.key;if(this.fxCache.has(key))return this.fxCache.get(key);
+    let out=url;
+    try{
+      const img=new Image();img.src=url;await img.decode();
+      let w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)throw new Error('gambar kosong');
+      const k=Math.min(1,3000/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+      const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0,w,h);
+      const d=g.getImageData(0,0,w,h),p=d.data,[fr,fg,fb]=fx.from,tol=32;
+      for(let i=0;i<p.length;i+=4){
+        if(Math.abs(p[i]-fr)<=tol&&Math.abs(p[i+1]-fg)<=tol&&Math.abs(p[i+2]-fb)<=tol){p[i+3]=0;continue}
+        /* Hitam-putih (biLevel): yang gelap jadi hitam, sisa terang dianggap latar dan ikut tembus pandang */
+        if(fx.thresh!=null){const l=.299*p[i]+.587*p[i+1]+.114*p[i+2];if(l<fx.thresh)p[i]=p[i+1]=p[i+2]=0;else p[i+3]=0}
+      }
+      g.putImageData(d,0,0);
+      const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+      if(blob){out=URL.createObjectURL(blob);this.urls.push(out)}
+    }catch(e){console.warn('Warna transparan gagal diterapkan',e)}
+    this.fxCache.set(key,out);return out;
   }
   async _img(rid,ctx){
     const path=ctx.rels[rid];if(!path||!this.zip.has(path))return null;
