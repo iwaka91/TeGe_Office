@@ -89,6 +89,7 @@ public final class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle state){
         super.onCreate(state);
+        registerBackCallback();
         com.totogutomo.tgpdflab.DiagLog.init(this);
         com.totogutomo.tgpdflab.DiagLog.log(this,"APP","APP_START restored="+(state!=null)+" action="+(getIntent()==null?"-":getIntent().getAction())
             +" "+com.totogutomo.tgpdflab.DiagLog.memory(this));
@@ -641,14 +642,31 @@ public final class MainActivity extends Activity {
             web.evaluateJavascript("window.__TG_PDF_PROGRESS__&&window.__TG_PDF_PROGRESS__("+r+");",null);
         }catch(Exception ignored){}
     }
-    @Override public void onBackPressed(){
+    /** Android 13+ dengan target 36 tidak lagi memanggil onBackPressed; Back harus lewat pemanggil balik ini. */
+    private void registerBackCallback(){
+        if(Build.VERSION.SDK_INT>=33){
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,this::handleBack);
+        }
+    }
+    @Override public void onBackPressed(){handleBack();}
+    private void handleBack(){
         if(customView!=null){hideCustom();return;}
-        if(web==null){super.onBackPressed();return;}
+        if(web==null){finish();return;}
         web.evaluateJavascript("(function(){try{return window.__TG_BACK__?window.__TG_BACK__():'none'}catch(e){return 'none'}})()",result->{
                 if(!"\"none\"".equals(result))return;
                 if(web!=null&&web.canGoBack())web.goBack();
-                else MainActivity.super.onBackPressed();
+                else confirmExit();
             });
+    }
+    /** Back di beranda: tanya dulu sebelum keluar. */
+    private void confirmExit(){
+        if(isFinishing())return;
+        new android.app.AlertDialog.Builder(this)
+            .setMessage("Keluar dari TeGe Office?")
+            .setNegativeButton("Batal",null)
+            .setPositiveButton("Keluar",(d,w)->finish())
+            .show();
     }
     @Override protected void onDestroy(){
         synchronized(transferLock){cancelTransfer();}
