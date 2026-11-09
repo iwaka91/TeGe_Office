@@ -8,7 +8,7 @@ on:
       - uji-tahap-ab
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   apk:
@@ -45,3 +45,14 @@ jobs:
           name: TeGe-Office-uji-apk
           path: TG-Office-Integrated/app/build/outputs/apk/debug/*.apk
           retention-days: 7
+      - name: Simpan APK ke cabang uji (apk-uji/)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p apk-uji
+          cp TG-Office-Integrated/app/build/outputs/apk/debug/*.apk apk-uji/TeGe-Office-uji.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f apk-uji/TeGe-Office-uji.apk
+          git commit -m "APK uji dari build otomatis"
+          git push origin HEAD:uji-tahap-ab
