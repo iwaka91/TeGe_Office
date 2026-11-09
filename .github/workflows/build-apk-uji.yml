@@ -1,0 +1,47 @@
+name: Build TeGe Office APK Uji
+# APK uji (paket com.totogutomo.tgoffice.beta, terpasang berdampingan dengan versi lain).
+# Dijalankan dengan mendorong commit ke branch "uji-tahap-ab" atau manual (Actions > Run workflow).
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - uji-tahap-ab
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare web assets (offline engines)
+        shell: bash
+        run: bash TG-Office-Integrated/scripts/prepare-web-assets.sh
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK + extension 19
+        shell: bash
+        run: |
+          SDKROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then SDKMANAGER="$(find "$SDKROOT/cmdline-tools" -type f -name sdkmanager -print -quit)"; fi
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platforms;android-36" "platforms;android-36-ext19" "build-tools;36.0.0"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build debug APK
+        run: gradle -p TG-Office-Integrated :app:assembleDebug --no-daemon --stacktrace
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TeGe-Office-uji-apk
+          path: TG-Office-Integrated/app/build/outputs/apk/debug/*.apk
+          retention-days: 7
