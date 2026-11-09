@@ -795,14 +795,21 @@ public final class MainActivity extends AppCompatActivity {
             return;
         }
         Uri source = currentUri;
+        // Nama asli file dipakai saat dibagikan (bukan nama tetap).
+        String shareName = readableName(source).replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]", "_").trim();
+        if (shareName.isEmpty()) shareName = "Dokumen";
+        if (!shareName.toLowerCase(java.util.Locale.ROOT).endsWith(".pdf")) shareName += ".pdf";
+        final String finalShareName = shareName;
         showStatus("Menyiapkan PDF untuk dibagikan…", 0);
         io.execute(() -> {
             try {
-                File dir = new File(getCacheDir(), "shares");
+                // Folder unik per bagikan agar nama file tetap sama dengan aslinya.
+                File dir = new File(new File(getCacheDir(), "shares"),
+                    "s" + Long.toHexString(System.nanoTime()));
                 if (!dir.exists() && !dir.mkdirs()) {
                     throw new IllegalStateException("Cache share tidak tersedia");
                 }
-                File dest = new File(dir, "tg-pdf-lab-share.pdf");
+                File dest = new File(dir, finalShareName);
                 try (InputStream in = getContentResolver().openInputStream(source);
                      OutputStream out = new FileOutputStream(dest)) {
                     if (in == null) throw new IllegalStateException("File tidak dapat dibaca");

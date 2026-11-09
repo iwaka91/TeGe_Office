@@ -233,11 +233,11 @@ public final class MainActivity extends Activity {
         new Thread(()->{
             File[] files=transferDir().listFiles();if(files==null)return;
             long limit=System.currentTimeMillis()-10*60*1000L;
-            for(File f:files)if(f.lastModified()<limit)f.delete();
+            for(File f:files)if(f.lastModified()<limit)deleteTree(f);
             File[] old=new File(getCacheDir(),"cast").listFiles();
             if(old!=null&&(cast==null||!cast.isRunning()))for(File f:old)f.delete();
             File[] shares=new File(getCacheDir(),"shares").listFiles();
-            if(shares!=null)for(File f:shares)if(f.lastModified()<limit)f.delete();
+            if(shares!=null)for(File f:shares)if(f.lastModified()<limit)deleteTree(f);
         }).start();
     }
     /**
@@ -570,7 +570,45 @@ public final class MainActivity extends Activity {
         if(transferFile!=null)transferFile.delete();
         transferId=null;transferFile=null;transferOutput=null;transferExpected=0;transferSize=0;
     }
-    private void shareFile(File file,String mime){
+    /** Pindahkan salinan sementara ke folder sendiri bernama asli (tanpa awalan "tg-…-"), agar nama file saat dibagikan sama dengan aslinya. */
+    private File cleanShareCopy(File f){
+        String name=f.getName();
+        if(!name.matches("^tg-[a-z0-9]+-.+"))return f;
+        File dir=new File(transferDir(),"s"+Long.toHexString(System.nanoTime()));
+        if(!dir.mkdirs())return f;
+        File target=new File(dir,name.replaceFirst("^tg-[a-z0-9]+-",""));
+        return f.renameTo(target)?target:f;
+    }
+    private static void deleteTree(File f){
+        File[] kids=f.isDirectory()?f.listFiles():null;
+        if(kids!=null)for(File k:kids)deleteTree(k);
+        f.delete();
+    }
+    /** Buat PDF dari isi halaman cetak (tanpa dialog), lalu buka lembar berbagi Android. */
+    private void exportWebPdfNow(String base,boolean landscape){
+        if(web==null){notifyPrintDone();return;}
+        final File dir=new File(transferDir(),"s"+Long.toHexString(System.nanoTime()));
+        if(!dir.mkdirs()){notifyPrintDone();Toast.makeText(this,"Gagal membuat PDF",Toast.LENGTH_SHORT).show();return;}
+        final File out=new File(dir,base+".pdf");
+        try{
+            PrintAttributes.MediaSize size=landscape?PrintAttributes.MediaSize.ISO_A4.asLandscape():PrintAttributes.MediaSize.ISO_A4;
+            PrintAttributes attrs=new PrintAttributes.Builder().setMediaSize(size)
+                .setResolution(new PrintAttributes.Resolution("pdf","pdf",300,300))
+                .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build();
+            android.print.PdfExporter.export(web.createPrintDocumentAdapter(base),attrs,out,ok->{
+                if(ok&&out.length()>0)shareFile(out,"application/pdf");
+                else{deleteTree(dir);Toast.makeText(this,"Gagal membuat PDF",Toast.LENGTH_SHORT).show();}
+                notifyPrintDone();
+            });
+        }catch(Throwable t){
+            // Cadangan: bila pembuat PDF otomatis tidak bisa dipakai di perangkat ini, buka dialog cetak biasa.
+            deleteTree(dir);
+            Toast.makeText(this,"Di dialog cetak, pilih Simpan sebagai PDF",Toast.LENGTH_LONG).show();
+            printWebPage(base);
+        }
+    }
+    private void shareFile(File original,String mime){
+        final File file=cleanShareCopy(original);
         runOnUiThread(()->{
             try{
                 Uri shared=FileProvider.getUriForFile(this,getPackageName()+".fileprovider",file);
@@ -591,7 +629,7 @@ public final class MainActivity extends Activity {
             File[] files=transferDir().listFiles();if(files==null)return;
             long limit=System.currentTimeMillis()-60*1000L;
             File active;synchronized(transferLock){active=transferFile;}
-            for(File f:files)if(f.lastModified()<limit&&!f.equals(active))f.delete();
+            for(File f:files)if(f.lastModified()<limit&&!f.equals(active))deleteTree(f);
         }).start();
         String name=com.totogutomo.tgpdflab.MainActivity.reportName;
         if(name==null||web==null||!pageReady)return;
@@ -674,6 +712,12 @@ public final class MainActivity extends Activity {
             File f=completed(id);if(f==null)return false;
             final String job=f.getName().replaceFirst("^tg-[a-z0-9]+-","");
             runOnUiThread(()->printPdfFile(f,job));
+            return true;
+        }
+        @JavascriptInterface public boolean exportWebPdf(String name,boolean landscape){
+            if(web==null)return false;
+            String base=safeName(name==null||name.trim().isEmpty()?"Dokumen":name.trim());
+            runOnUiThread(()->exportWebPdfNow(base,landscape));
             return true;
         }
         @JavascriptInterface public boolean shareCurrentFile(String name){

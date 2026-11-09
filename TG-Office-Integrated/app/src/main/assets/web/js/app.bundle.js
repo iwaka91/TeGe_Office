@@ -1610,6 +1610,7 @@ function showError(detail){
 function cleanup(clearFile=true){clearInterval(positionTimer);positionTimer=null;closeMenu();setSearch(false);current?.destroy?.();current=null;if(clearFile){currentFile=null;nativeName=null}host.replaceChildren();sub.classList.add('hidden');sub.replaceChildren();currentType=null;currentFileId=null;zoomChip.classList.add('hidden')}
 async function goHome(){await flushPosition();setFocusMode(false);cleanup();viewer.classList.add('hidden');viewer.classList.remove('thumbs-on','thumbs-off','ppt-scroll');home.classList.remove('hidden');qs('#homeTopbar').classList.remove('hidden');try{bridge?.clearNativeShareTarget?.()}catch{}try{bridge?.setPresentationMode?.(false)}catch{}renderHomeLists()}
 qs('#backBtn').onclick=goHome;
+qs('#viewerFileName').onclick=()=>{if(currentFile&&current)shareMenu()};
 
 function startPositionMemory(){clearInterval(positionTimer);positionTimer=setInterval(flushPosition,1400)}
 async function flushPosition(){if(!current?.getPosition||!currentFileId)return;try{await updateRecentMeta(currentFileId,{position:current.getPosition()})}catch{}}
@@ -1645,8 +1646,8 @@ function menuItems(){
   if(t!=='pptx')head.push(item(ICON.rotate,'Putar layar',()=>rotateScreen()));
   head.push(item(ICON.full,'Layar penuh',()=>toggleFullscreen()));
   head.push(item(dark?ICON.sun:ICON.moon,dark?'Tema terang':'Tema gelap',()=>toggleTheme()));
-  head.push(item(ICON.print,'Cetak',()=>printCurrent()));
-  head.push(item(ICON.share,'Bagikan '+(SUPPORTED[t]?.label||'file'),()=>shareCurrent()));
+  head.push(item(ICON.print,'Cetak',()=>{printToPdf=false;printCurrent()}));
+  head.push(item(ICON.share,'Bagikan '+(SUPPORTED[t]?.label||'file'),()=>shareMenu()));
   return head;
 }
 function openMenu(){
@@ -1805,7 +1806,16 @@ async function toggleFullscreen(){
 }
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&viewer.classList.contains('focus-mode')&&!bridge?.setImmersive)setFocusMode(false)});
 
-/* Bagikan */
+/* Bagikan: file asli atau PDF (Word, Excel, PowerPoint) */
+function shareMenu(){
+  if(!currentFile)return toast('Tidak ada file aktif.');
+  if(currentType==='pdf'||!bridge?.exportWebPdf)return shareCurrent();
+  const label=SUPPORTED[currentType]?.label||'file';
+  optionSheet('Bagikan',[
+    {id:'orig',label:'Bagikan file asli',desc:`Dikirim apa adanya sebagai ${label}`},
+    {id:'pdf',label:'Bagikan sebagai PDF',desc:'Hasil mengikuti tampilan di penampil'}
+  ],null,id=>{if(id==='pdf'){printToPdf=true;printCurrent()}else shareCurrent()});
+}
 async function shareCurrent(){
   if(!currentFile)return toast('Tidak ada file aktif.');const f=withMime(currentFile,currentType);
   if(bridge){
@@ -1817,13 +1827,17 @@ async function shareCurrent(){
 }
 
 /* ---------- Cetak ---------- */
-let printStyle=null;
-function setPageSize(css){printStyle?.remove();printStyle=document.createElement('style');printStyle.textContent=`@media print{@page{size:${css};margin:0}}`;document.head.append(printStyle)}
-function finishPrint(){document.body.classList.remove('printing');printRoot.classList.remove('preparing');printRoot.replaceChildren();printStyle?.remove();printStyle=null}
+let printStyle=null,printToPdf=false,pageLandscape=false;
+function setPageSize(css){pageLandscape=/landscape/i.test(css)||(()=>{const m=css.match(/([\d.]+)in\s+([\d.]+)in/);return !!m&&+m[1]>+m[2]})();printStyle?.remove();printStyle=document.createElement('style');printStyle.textContent=`@media print{@page{size:${css};margin:0}}`;document.head.append(printStyle)}
+function finishPrint(){if(printToPdf){printToPdf=false;setLoading(false)}document.body.classList.remove('printing');printRoot.classList.remove('preparing');printRoot.replaceChildren();printStyle?.remove();printStyle=null}
 window.__TG_PRINT_DONE__=finishPrint;
 async function waitImages(root){const imgs=[...root.querySelectorAll('img')];await Promise.all(imgs.map(i=>i.complete?null:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,4000)})));await new Promise(r=>setTimeout(r,250))}
 async function runPrint(job){
   document.body.classList.add('printing');await waitImages(printRoot);
+  if(printToPdf){
+    if(bridge?.exportWebPdf){setLoading(true,'Membuat PDF','Mohon tunggu sebentar…');if(!bridge.exportWebPdf(baseName(),pageLandscape))finishPrint();return}
+    printToPdf=false;
+  }
   if(bridge?.printWeb){if(!bridge.printWeb(job))finishPrint();return}
   window.print();setTimeout(finishPrint,800);
 }
@@ -1851,7 +1865,7 @@ function bindSeg(box){box.querySelectorAll('.seg').forEach(seg=>seg.querySelecto
 function segVal(box,name){const seg=box.querySelector(`[data-seg="${name}"]`);return seg?.querySelector('button.on')?.dataset.v}
 function pptPrintSheet(){
   const total=current?.slideCount||1;
-  openSheet(`<h3 class="sheet-title">Cetak PowerPoint</h3><div class="sheet-label">SLIDE PER LEMBAR</div>${segHtml('per',[['1','1'],['4','4'],['6','6']],'1')}<div class="sheet-label">RENTANG</div>${segHtml('range',[['all','Semua'],['cur','Slide ini']],'all')}<p class="sheet-note" id="pptNote"></p><button class="solid-btn" id="pptGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
+  openSheet(`<h3 class="sheet-title">Cetak PowerPoint</h3><div class="sheet-label">SLIDE PER LEMBAR</div>${segHtml('per',[['1','1'],['4','4'],['6','6']],'1')}<div class="sheet-label">RENTANG</div>${segHtml('range',[['all','Semua'],['cur','Slide ini']],'all')}<p class="sheet-note" id="pptNote"></p><button class="solid-btn" id="pptGo" type="button">${printToPdf?'Lanjut membuat PDF':'Lanjut ke dialog cetak'}</button>`,box=>{
     bindSeg(box);const note=()=>{const per=+segVal(box,'per'),n=segVal(box,'range')==='cur'?1:total;box.querySelector('#pptNote').textContent=`${n} slide akan menjadi ${Math.ceil(n/per)} lembar. Slide digambar dulu sebelum dicetak, jadi file besar butuh beberapa detik.`};note();box.addEventListener('change',note);
     box.querySelector('#pptGo').onclick=()=>{const per=+segVal(box,'per'),range=segVal(box,'range');sheet.close();printPpt(per,range)};
   });
@@ -1872,7 +1886,7 @@ async function printPpt(per,range){
 }
 function xlsxPrintSheet(){
   const many=(current?.book?.sheets?.length||1)>1;
-  openSheet(`<h3 class="sheet-title">Cetak Excel</h3>${many?`<div class="sheet-label">YANG DICETAK</div>${segHtml('what',[['cur','Sheet ini'],['all','Semua sheet']],'cur')}`:''}<div class="sheet-label">UKURAN</div>${segHtml('fit',[['fit','Muat lebar kertas'],['real','Ukuran asli']],'fit')}<div class="sheet-label">ARAH KERTAS</div>${segHtml('orient',[['portrait','Tegak'],['landscape','Mendatar']],'landscape')}<p class="sheet-note">Tabel yang lebar diperkecil agar semua kolom muat dalam satu lembar.</p><button class="solid-btn" id="xlsGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
+  openSheet(`<h3 class="sheet-title">Cetak Excel</h3>${many?`<div class="sheet-label">YANG DICETAK</div>${segHtml('what',[['cur','Sheet ini'],['all','Semua sheet']],'cur')}`:''}<div class="sheet-label">UKURAN</div>${segHtml('fit',[['fit','Muat lebar kertas'],['real','Ukuran asli']],'fit')}<div class="sheet-label">ARAH KERTAS</div>${segHtml('orient',[['portrait','Tegak'],['landscape','Mendatar']],'landscape')}<p class="sheet-note">Tabel yang lebar diperkecil agar semua kolom muat dalam satu lembar.</p><button class="solid-btn" id="xlsGo" type="button">${printToPdf?'Lanjut membuat PDF':'Lanjut ke dialog cetak'}</button>`,box=>{
     bindSeg(box);box.querySelector('#xlsGo').onclick=()=>{const o={what:segVal(box,'what')||'cur',fit:segVal(box,'fit'),orient:segVal(box,'orient')};sheet.close();printXlsx(o)};
   });
 }
