@@ -1,0 +1,35 @@
+name: Build APK uji (sementara)
+on:
+  workflow_dispatch:
+  push:
+    branches: [apk-uji]
+permissions:
+  contents: read
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare web assets
+        run: bash TG-Office-Integrated/scripts/prepare-web-assets.sh
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          SDKROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKMANAGER="$(command -v sdkmanager || find "$SDKROOT/cmdline-tools" -type f -name sdkmanager -print -quit)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platforms;android-36" "platforms;android-36-ext19" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build debug APK
+        run: gradle -p TG-Office-Integrated :app:assembleDebug --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk-uji
+          path: TG-Office-Integrated/app/build/outputs/apk/debug/*.apk
+          retention-days: 1
