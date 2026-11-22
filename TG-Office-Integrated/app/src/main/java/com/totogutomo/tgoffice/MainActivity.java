@@ -116,6 +116,7 @@ public final class MainActivity extends Activity {
         configureWeb();
         cleanOldTransfers();
         handleIncoming(getIntent());
+        registerBackCallback();
         web.loadUrl(HOME);
     }
     private void configureWeb(){
@@ -233,11 +234,11 @@ public final class MainActivity extends Activity {
         new Thread(()->{
             File[] files=transferDir().listFiles();if(files==null)return;
             long limit=System.currentTimeMillis()-10*60*1000L;
-            for(File f:files)if(f.lastModified()<limit)f.delete();
+            for(File f:files)if(f.lastModified()<limit)deleteTree(f);
             File[] old=new File(getCacheDir(),"cast").listFiles();
             if(old!=null&&(cast==null||!cast.isRunning()))for(File f:old)f.delete();
             File[] shares=new File(getCacheDir(),"shares").listFiles();
-            if(shares!=null)for(File f:shares)if(f.lastModified()<limit)f.delete();
+            if(shares!=null)for(File f:shares)if(f.lastModified()<limit)deleteTree(f);
         }).start();
     }
     /**
@@ -562,12 +563,23 @@ public final class MainActivity extends Activity {
         if(!folder.exists())folder.mkdirs();
         return folder;
     }
+    /** Berkas sementara dengan nama asli dokumen (di subfolder unik agar tidak bentrok). */
+    private File namedTransferFile(String name){
+        File folder=new File(transferDir(),"t"+System.nanoTime());
+        folder.mkdirs();
+        return new File(folder,safeName(name));
+    }
+    private static void deleteTree(File f){
+        File[] kids=f.listFiles();
+        if(kids!=null)for(File k:kids)deleteTree(k);
+        f.delete();
+    }
     private String safeName(String name){
         return name==null?"document.pdf":name.replaceAll("[^a-zA-Z0-9._() -]","_");
     }
     private void cancelTransfer(){
         try{if(transferOutput!=null)transferOutput.close();}catch(Exception ignored){}
-        if(transferFile!=null)transferFile.delete();
+        if(transferFile!=null){transferFile.delete();File d=transferFile.getParentFile();if(d!=null&&!d.equals(transferDir()))d.delete();}
         transferId=null;transferFile=null;transferOutput=null;transferExpected=0;transferSize=0;
     }
     private void shareFile(File file,String mime){
@@ -591,7 +603,8 @@ public final class MainActivity extends Activity {
             File[] files=transferDir().listFiles();if(files==null)return;
             long limit=System.currentTimeMillis()-60*1000L;
             File active;synchronized(transferLock){active=transferFile;}
-            for(File f:files)if(f.lastModified()<limit&&!f.equals(active))f.delete();
+            File activeDir=active==null?null:active.getParentFile();
+            for(File f:files)if(f.lastModified()<limit&&!f.equals(active)&&!f.equals(activeDir))deleteTree(f);
         }).start();
         String name=com.totogutomo.tgpdflab.MainActivity.reportName;
         if(name==null||web==null||!pageReady)return;
@@ -603,14 +616,31 @@ public final class MainActivity extends Activity {
             web.evaluateJavascript("window.__TG_PDF_PROGRESS__&&window.__TG_PDF_PROGRESS__("+r+");",null);
         }catch(Exception ignored){}
     }
-    @Override public void onBackPressed(){
+    @Override public void onBackPressed(){handleBack();}
+    /** Android 13+ (target 36) tidak lagi memanggil onBackPressed; Back ditangani lewat callback ini. */
+    private void registerBackCallback(){
+        if(Build.VERSION.SDK_INT>=33){
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,this::handleBack);
+        }
+    }
+    private void handleBack(){
         if(customView!=null){hideCustom();return;}
-        if(web==null){super.onBackPressed();return;}
+        if(web==null){finish();return;}
         web.evaluateJavascript("(function(){try{return window.__TG_BACK__?window.__TG_BACK__():'none'}catch(e){return 'none'}})()",result->{
                 if(!"\"none\"".equals(result))return;
                 if(web!=null&&web.canGoBack())web.goBack();
-                else MainActivity.super.onBackPressed();
+                else confirmExit();
             });
+    }
+    private android.app.AlertDialog exitDialog;
+    private void confirmExit(){
+        if(isFinishing()||(exitDialog!=null&&exitDialog.isShowing()))return;
+        exitDialog=new android.app.AlertDialog.Builder(this)
+            .setMessage("Keluar dari TeGe Office?")
+            .setNegativeButton("Batal",null)
+            .setPositiveButton("Keluar",(d,w)->finish())
+            .show();
     }
     @Override protected void onDestroy(){
         synchronized(transferLock){cancelTransfer();}
@@ -680,7 +710,7 @@ public final class MainActivity extends Activity {
             Uri uri=documentUri;
             if(uri==null||documentName==null||!documentName.equals(name))return false;
             new Thread(()->{
-                File output=new File(transferDir(),"tg-"+System.nanoTime()+"-"+safeName(name));
+                File output=namedTransferFile(name);
                 try(InputStream in=getContentResolver().openInputStream(uri);
                     FileOutputStream out=new FileOutputStream(output)){
                     if(in==null)throw new IOException("File kosong");
@@ -700,7 +730,7 @@ public final class MainActivity extends Activity {
                 cancelTransfer();
                 try{
                     transferId=Long.toHexString(System.nanoTime());
-                    transferFile=new File(transferDir(),"tg-"+transferId+"-"+safeName(name));
+                    transferFile=namedTransferFile(name);
                     transferOutput=new FileOutputStream(transferFile);
                     transferExpected=size;transferMime=mime;return transferId;
                 }catch(Exception e){cancelTransfer();return "";}

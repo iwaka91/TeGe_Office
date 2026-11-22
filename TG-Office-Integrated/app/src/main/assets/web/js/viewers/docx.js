@@ -418,7 +418,8 @@ export class DocxViewer{
       }
       let node=null;
       if(blip){
-        const url=await this._img(attr(blip,'embed'),ctx);if(!url)return;
+        const cc=firstByLocal(blip,'clrChange'),keyHex=cc?A(firstByLocal(cc,'clrFrom')?.firstElementChild):null;
+        const url=keyHex?await this._imgKeyed(attr(blip,'embed'),ctx,keyHex):await this._img(attr(blip,'embed'),ctx);if(!url)return;
         node=document.createElement('img');node.src=url;node.alt='Gambar dokumen';if(cx){node.style.width=(cx/9525)+'px';if(cy)node.style.aspectRatio=`${cx}/${cy}`}
       }else{
         const g=firstByLocal(anc,'prstGeom'),prst=A(g,'prst');
@@ -440,6 +441,27 @@ export class DocxViewer{
     const path=ctx.rels[rid];if(!path||!this.zip.has(path))return null;
     if(this.imgCache.has(path))return this.imgCache.get(path);
     const ext=(path.split('.').pop()||'').toLowerCase(),url=await this.zip.blobUrl(path,MIME[ext]||'application/octet-stream');this.urls.push(url);this.imgCache.set(path,url);return url;
+  }
+
+  /* Gambar dengan "warna transparan" Word (clrChange): warna kunci dibuat tembus pandang. */
+  async _imgKeyed(rid,ctx,hex){
+    const path=ctx.rels[rid];if(!path||!this.zip.has(path))return null;
+    const key='key:'+hex+':'+path;if(this.imgCache.has(key))return this.imgCache.get(key);
+    const plain=await this._img(rid,ctx);if(!plain||!/^[0-9a-f]{6}$/i.test(hex))return plain;
+    try{
+      const im=new Image();im.src=plain;await im.decode();
+      const w=im.naturalWidth,h=im.naturalHeight;if(!w||!h)return plain;
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      const g=cv.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0);
+      const d=g.getImageData(0,0,w,h),px=d.data,kr=parseInt(hex.slice(0,2),16),kg=parseInt(hex.slice(2,4),16),kb=parseInt(hex.slice(4,6),16);
+      for(let i=0;i<px.length;i+=4){
+        const df=Math.max(Math.abs(px[i]-kr),Math.abs(px[i+1]-kg),Math.abs(px[i+2]-kb));
+        if(df<=20)px[i+3]=0;else if(df<60)px[i+3]=Math.round(px[i+3]*(df-20)/40);
+      }
+      g.putImageData(d,0,0);
+      const blob=await new Promise(r=>cv.toBlob(r,'image/png'));if(!blob)return plain;
+      const url=URL.createObjectURL(blob);this.urls.push(url);this.imgCache.set(key,url);return url;
+    }catch(e){return plain}
   }
 
   /* ---------- tabel ---------- */
