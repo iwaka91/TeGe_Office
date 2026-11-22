@@ -8,7 +8,7 @@ import {PdfViewer} from './viewers/pdf.js';
 
 /* TeGe Office — cangkang aplikasi: beranda, menu penampil seragam, cetak, jembatan Android. */
 window.__TG_OFFICE_BOOTED__=true;
-const APP_VERSION='Versi 1.0.4';
+const APP_VERSION='Versi 1.0.5';
 const bridge=window.AndroidBridge||null;
 /* Pengaturan (disimpan di perangkat) */
 const PREF_KEY='tg-office-prefs',PREF_DEF={progres:true,word:'mengalir',ppt:'satu',pdf:'gulir'};

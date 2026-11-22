@@ -1,5 +1,6 @@
 import {openZip} from '../zip-reader.js';
 import {xml,attr,resolvePath,firstByLocal,clamp} from '../utils.js';
+import {renderOmml} from './omml.js';
 const MIME={png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',svg:'image/svg+xml',webp:'image/webp',emf:'image/emf',wmf:'image/wmf'};
 const PX=96/1440;
 const kids=(e,n)=>e?[...e.children].filter(c=>c.localName===n):[];
@@ -392,6 +393,8 @@ export class DocxViewer{
           case 'fldSimple':{const ins=attr(c,'instr')||'';if(PAGE_FLD.test(ins)&&!hide()){const r0=kid(c,'r'),rd=r0?parseRPr(kid(r0,'rPr')):{};let re=mergeR(runBase,rd.rStyle?this.styles.char(rd.rStyle):{});re=mergeR(re,rd);addFld(ins,this._rCss(re).css)}else await walk(c);break}
           case 'hyperlink':case 'ins':case 'smartTag':case 'customXml':case 'moveTo':await walk(c);break;
           case 'sdt':{const sc=kid(c,'sdtContent');if(sc)await walk(sc);break}
+          case 'oMath':{const bi=this._rCss(runBase);cur.append(renderOmml(c,{fam:bi.fam,sz:bi.sz,rpr:parseRPr}));hasContent=true;afterBreak=false;break}
+          case 'oMathPara':{const bi=this._rCss(runBase);const blk=document.createElement('span');blk.className='tgm-disp';for(const m of c.children)if(m.localName==='oMath')blk.append(renderOmml(m,{fam:bi.fam,sz:bi.sz,rpr:parseRPr}));cur.append(blk);hasContent=true;afterBreak=false;break}
         }
       }
     };

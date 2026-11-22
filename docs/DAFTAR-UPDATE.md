@@ -47,3 +47,8 @@ Dicatat: 20 Oktober 2026. Status: **sudah dikerjakan di kode (22 November 2026),
 - Tampilan Mengalir: blok tanda tangan yang menjorok jauh tidak lagi tersusun huruf ke bawah; tabel lebar tidak dipersempit berlebihan (bisa digeser ke samping).
 - Judul file: seluruh blok judul bisa diketuk untuk Bagikan; di pembaca PDF, ketuk judul membuka Bagikan PDF.
 - PowerPoint 4/6 slide per lembar: pilihan arah kertas (Tegak/Mendatar), susunan otomatis mengisi kertas; arah kertas juga diteruskan ke cetak dan Bagikan sebagai PDF.
+
+## Versi 1.0.5 (23 November 2026)
+
+- Word: persamaan (editor persamaan Word) kini tampil di mode Halaman dan Mengalir. Didukung: pecahan, pangkat, indeks, akar (termasuk akar pangkat n), integral (∫ ∬ ∭ ∮) dengan batas, sigma/produk, kurung/kurung siku/kurung kurawal yang ikut meregang, fungsi (sin, cos, log, lim), matriks, aksen/garis atas-bawah. Digambar dengan HTML/SVG sendiri, tidak bergantung pada font matematika perangkat.
+- Catatan: persamaan yang sangat rumit bisa sedikit berbeda dari tampilan di Word.

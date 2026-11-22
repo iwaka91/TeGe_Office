@@ -468,3 +468,57 @@ button,input{font:inherit}.hidden{display:none!important}.app-shell{min-height:1
 #viewerFileName{cursor:pointer}
 .docx-mobile-document{overflow-x:visible}.docx-shell.mobile{overflow-x:auto}
 .file-identity{cursor:pointer}
+
+/* ---------- persamaan Word (OMML) ---------- */
+.tgm{display:inline;white-space:normal;line-height:1.25;font-style:normal;text-indent:0}
+.tgm-g{display:inline}
+.tgm-t{white-space:pre-wrap}
+.tgm-rel{padding:0 .28em}.tgm-bin{padding:0 .2em}.tgm-un{padding:0 .04em 0 0}
+.tgm-cm{padding-right:.18em}
+.tgm-op{padding:0 .05em}
+.tgm-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;text-align:center;line-height:1.15}
+.tgm-num{padding:0 .18em .06em;border-bottom:1px solid currentColor;white-space:nowrap}
+.tgm-den{padding:.06em .18em 0;white-space:nowrap}
+.tgm-lin{display:inline}
+.tgm-ss{display:inline}
+.tgm-sup,.tgm-sub{font-size:.7em;line-height:1.05;white-space:nowrap;display:inline-block}
+.tgm-ss>.tgm-sup{vertical-align:.5em}
+.tgm-ss>.tgm-sub{vertical-align:-.3em}
+.tgm-stack{display:inline-flex;flex-direction:column;vertical-align:-.62em;line-height:1.05}
+.tgm-stack .tgm-sup,.tgm-stack .tgm-sub{display:block;vertical-align:baseline}
+.tgm-pre{margin-right:.08em}
+.tgm-rad{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .05em}
+.tgm-deg{font-size:.6em;align-self:flex-start;margin-right:-.3em;margin-left:.05em;padding-top:0;position:relative;z-index:1}
+.tgm-rsign{width:.75em;min-height:1.1em;position:relative}
+.tgm-rbody{border-top:1px solid currentColor;padding:.12em .12em 0 .08em;margin-left:-.02em;display:inline-block;white-space:nowrap}
+.tgm-svg{display:block;overflow:visible}
+.tgm-rsign .tgm-svg,.tgm-fence .tgm-svg,.tgm-gc .tgm-svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.tgm-nary{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .12em}
+.tgm-sidelim{display:inline-flex;align-items:center}
+.tgm-int{display:inline-flex;height:1.95em;margin-right:.05em;position:relative}
+.tgm-int .tgm-svg{width:.5em;height:100%;margin-right:-.18em}
+.tgm-int .tgm-circ{position:absolute;left:50%;top:50%;width:.55em;height:.55em;transform:translate(-50%,-50%)}
+.tgm-nstack{display:flex;flex-direction:column;justify-content:space-between;height:1.95em;margin-left:.1em;line-height:1.05}
+.tgm-nstack .tgm-sup{margin-left:.35em;vertical-align:baseline}
+.tgm-nstack .tgm-sub{margin-left:-.1em;vertical-align:baseline}
+.tgm-big{font-size:1.5em;line-height:1}
+.tgm-und{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;text-align:center}
+.tgm-lim{font-size:.72em;line-height:1.1;white-space:nowrap}
+.tgm-nbody{display:inline-block;margin-left:.2em}
+.tgm-d{display:inline-flex;align-items:stretch;vertical-align:middle}
+.tgm-di{display:inline-flex;align-items:center}
+.tgm-fence{display:block;position:relative;width:.4em;min-height:1.15em;align-self:stretch;margin:0 .02em}
+.tgm-func{display:inline}
+.tgm-fname{padding-right:.18em}
+.tgm-fname .tgm-t{font-style:normal}
+.tgm-mx{display:inline-flex;flex-direction:column;vertical-align:middle;padding:.1em .15em}
+.tgm-mr{display:flex;justify-content:center}
+.tgm-mc{padding:.1em .45em;text-align:center;min-width:1em;white-space:nowrap}
+.tgm-eqa{display:inline-flex;flex-direction:column;vertical-align:middle}
+.tgm-acc{display:inline-flex;flex-direction:column;align-items:center;vertical-align:baseline}
+.tgm-ac{line-height:.7;font-size:.9em;margin-bottom:-.05em}
+.tgm-ovl{display:inline-block;border-top:1px solid currentColor;padding-top:.04em}
+.tgm-unl{display:inline-block;border-bottom:1px solid currentColor;padding-bottom:.04em}
+.tgm-gc{display:block;position:relative;height:.45em;width:100%;min-width:1em}
+.tgm-box{display:inline-block;border:1px solid currentColor;padding:.1em .25em}
+.tgm-disp{display:block;text-align:center;margin:.2em 0}

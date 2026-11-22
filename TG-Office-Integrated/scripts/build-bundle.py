@@ -4,7 +4,7 @@ Jalankan: python3 TG-Office-Integrated/scripts/build-bundle.py"""
 from pathlib import Path
 import re, sys
 web = Path(__file__).resolve().parents[1] / "app/src/main/assets/web"
-ORDER = ["js/utils.js", "js/storage.js", "js/zip-reader.js", "js/viewers/docx.js",
+ORDER = ["js/utils.js", "js/storage.js", "js/zip-reader.js", "js/viewers/omml.js", "js/viewers/docx.js",
          "js/viewers/xlsx.js", "js/viewers/pptx.js", "js/viewers/pdf.js",
          "js/menu.js", "js/qr.js", "js/cast.js", "js/app.js"]
 IMP = re.compile(r"^import\s*\{([^}]*)\}\s*from\s*'([^']+)';\s*$", re.M)
