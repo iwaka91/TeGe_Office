@@ -37,5 +37,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp TG-Office-Integrated/app/build/outputs/apk/debug/*.apk TeGe-Office-1.0.3-uji.apk
-          gh release create tmp-apk-uji TeGe-Office-1.0.3-uji.apk --prerelease --title sementara --notes "dihapus segera"
+          cp TG-Office-Integrated/app/build/outputs/apk/debug/*.apk TeGe-Office-1.0.4-uji.apk
+          gh release create tmp-apk-uji-104 TeGe-Office-1.0.4-uji.apk --prerelease --title sementara --notes "dihapus segera"

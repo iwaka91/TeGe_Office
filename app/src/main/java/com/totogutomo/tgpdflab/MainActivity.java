@@ -197,6 +197,8 @@ public final class MainActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(send, "Bagikan log diagnostik"));
         });
         ui.openButton.setOnClickListener(v -> picker.launch(new String[]{"application/pdf"}));
+        // TeGe Office: ketuk judul file untuk membagikan PDF
+        ui.titleText.setOnClickListener(v -> shareCurrent());
         ui.fallbackButton.setOnClickListener(v -> openWithAnotherApp());
         ui.themeQuick.setOnClickListener(v -> {
             boolean dark = !prefs.getBoolean(KEY_DARK, false);

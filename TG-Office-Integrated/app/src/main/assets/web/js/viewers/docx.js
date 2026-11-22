@@ -411,9 +411,9 @@ export class DocxViewer{
       const anc=[...n.children].find(x=>x.localName==='anchor'||x.localName==='inline');if(!anc)return;
       const ext=kid(anc,'extent'),cx=num(ext,'cx')||0,cy=num(ext,'cy')||0,blip=firstByLocal(anc,'blip');
       const isAnchor=anc.localName==='anchor',noWrap=isAnchor&&kid(anc,'wrapNone');
-      let abs=null;
+      let abs=null,hf=null;
       if(noWrap){
-        const ph=kid(anc,'positionH'),pv=kid(anc,'positionV'),hf=A(ph,'relativeFrom'),vf=A(pv,'relativeFrom');
+        const ph=kid(anc,'positionH'),pv=kid(anc,'positionV'),vf=A(pv,'relativeFrom');hf=A(ph,'relativeFrom');
         if(['column','margin','character'].includes(hf)&&['paragraph','line'].includes(vf)&&kid(ph,'posOffset')&&kid(pv,'posOffset'))abs={x:+kid(ph,'posOffset').textContent/9525,y:+kid(pv,'posOffset').textContent/9525};
       }
       let node=null;
@@ -429,7 +429,7 @@ export class DocxViewer{
         }
       }
       if(!node)return;
-      if(abs){node.style.position='absolute';node.style.left=abs.x+'px';node.style.top=abs.y+'px';host.style.position='relative';node.style.pointerEvents='none'}
+      if(abs){/* Word mengukur dari tepi kolom; elemen induk sudah menjorok sebesar indentasi paragraf */const pi=hf==='character'?0:(parseFloat(host.dataset?.left)||0);node.style.position='absolute';node.style.left=(abs.x-pi)+'px';node.style.top=abs.y+'px';host.style.position='relative';node.style.pointerEvents='none'}
       host.append(node);
     }else{
       const im=firstByLocal(n,'imagedata');if(!im)return;const url=await this._img(attr(im,'id'),ctx);if(!url)return;
@@ -575,7 +575,22 @@ export class DocxViewer{
 
   _renderMobile(){
     this.mobile=document.createElement('article');this.mobile.className='docx-document docx-mobile-document tgd';
-    for(const n of this.source){if(n.dataset?.k)continue;const c=n.cloneNode(true);if(c.tagName==='TABLE'){const w=el('div','tgd-scroll');w.append(c);this.mobile.append(w)}else this.mobile.append(c)}
+    this.source.forEach((n,i)=>{
+      if(n.dataset?.k)return;const c=n.cloneNode(true);
+      const g=this.sections[this.secOf[i]]?.page,cw=g?g.w-g.l-g.r:0;
+      if(c.tagName==='TABLE'){
+        /* Kolom tidak dipersempit berlebihan: tiap kolom minimal ±96px, tabel bisa digeser ke samping */
+        const cols=c.querySelectorAll('colgroup col').length||1,sw=c.style.width||'',nat=sw.endsWith('%')?cw*parseFloat(sw)/100:parseFloat(sw)||cw;
+        const fr=[...c.querySelectorAll('colgroup col')].map(x=>parseFloat(x.style.width)/100).filter(x=>x>0),minFr=fr.length?Math.min(...fr):1;
+        if(nat>0)c.style.minWidth=Math.round(Math.min(nat,Math.max(cols*96,80/minFr)))+'px';
+        const w=el('div','tgd-scroll');w.append(c);this.mobile.append(w);return;
+      }
+      /* Paragraf yang sangat menjorok (blok tanda tangan): pertahankan lebar aslinya agar huruf tidak tersusun ke bawah */
+      if(c.tagName==='P'&&cw){const ml=parseFloat(c.style.marginLeft)||0,mr=parseFloat(c.style.marginRight)||0;if(ml>cw*.4){const w=Math.max(60,cw-ml-mr);c.style.minWidth=w+'px';c.style.marginLeft=`clamp(0px, calc(100% - ${(w+mr).toFixed(0)}px), ${ml}px)`}}
+      /* Stempel/tanda tangan melayang: jaga tetap di dalam layar */
+      c.querySelectorAll?.('img').forEach(im=>{if(im.style.position!=='absolute')return;const l=parseFloat(im.style.left)||0,w=parseFloat(im.style.width)||0;im.style.left=`clamp(0px, ${l}px, calc(100% - ${w}px))`});
+      this.mobile.append(c);
+    });
     this.shell.replaceChildren(this.mobile)
   }
   _newPage(sec,first){

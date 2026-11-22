@@ -466,3 +466,5 @@ button,input{font:inherit}.hidden{display:none!important}.app-shell{min-height:1
 .legal-footer-brand{display:flex;align-items:center;gap:10px;min-width:0}.legal-footer-brand img{width:34px;height:34px;border-radius:10px}.legal-footer-brand span{display:grid;gap:2px}.legal-footer-brand strong{color:var(--text);font-size:.88rem}.legal-footer-brand small{font-size:.72rem}.legal-footer-links{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.legal-footer-links a,.about-legal-links a{color:#2563eb;text-decoration:none;font-weight:800;font-size:.78rem}.legal-footer-links a:hover,.about-legal-links a:hover{text-decoration:underline}.about-legal-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
 @media(max-width:620px){.legal-footer{align-items:flex-start;flex-direction:column}.legal-footer-links{gap:12px}}
 #viewerFileName{cursor:pointer}
+.docx-mobile-document{overflow-x:visible}.docx-shell.mobile{overflow-x:auto}
+.file-identity{cursor:pointer}

@@ -531,8 +531,12 @@ public final class MainActivity extends Activity {
             @Override public void onWrite(PageRange[] p,ParcelFileDescriptor d,CancellationSignal c,WriteResultCallback cb){inner.onWrite(p,d,c,cb);}
             @Override public void onFinish(){inner.onFinish();notifyPrintDone();}
         };
-        try{pm.print(job,wrapped,new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());}
+        try{pm.print(job,wrapped,new PrintAttributes.Builder().setMediaSize(a4()).build());}
         catch(Exception e){notifyPrintDone();Toast.makeText(this,"Dialog cetak tidak tersedia",Toast.LENGTH_SHORT).show();}
+    }
+    private volatile boolean printLandscape=false;
+    private PrintAttributes.MediaSize a4(){
+        return printLandscape?PrintAttributes.MediaSize.ISO_A4.asLandscape():PrintAttributes.MediaSize.ISO_A4.asPortrait();
     }
     private void exportWebPdfNow(String baseName){
         if(web==null){notifyPrintDone();return;}
@@ -540,7 +544,7 @@ public final class MainActivity extends Activity {
         final File out=namedTransferFile(base+".pdf");
         try{
             PrintAttributes attrs=new PrintAttributes.Builder()
-                .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                .setMediaSize(a4())
                 .setResolution(new PrintAttributes.Resolution("pdf","pdf",300,300))
                 .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build();
             android.print.TgPdfExporter.export(web.createPrintDocumentAdapter(base),attrs,out,
@@ -730,6 +734,8 @@ public final class MainActivity extends Activity {
             runOnUiThread(()->printPdfFile(f,job));
             return true;
         }
+        /** Arah kertas untuk cetak/PDF berikutnya: "portrait" atau "landscape". */
+        @JavascriptInterface public void setPrintOrientation(String o){printLandscape="landscape".equals(o);}
         /** Ubah isi cetak (printRoot) jadi PDF bernama asli dokumen lalu buka menu Bagikan. */
         @JavascriptInterface public boolean exportWebPdf(String baseName){
             runOnUiThread(()->exportWebPdfNow(baseName));

@@ -40,3 +40,10 @@ Dicatat: 20 Oktober 2026. Status: **sudah dikerjakan di kode (22 November 2026),
 ## Catatan
 
 - Sebelum rilis ke Play Store: `versionCode` harus lebih besar dari rilis sebelumnya. Alur rilis ada di `.github/workflows/release-tg-office-play.yml` (cara alur itu menentukan `versionCode` belum diperiksa).
+
+## Versi 1.0.4 (23 November 2026, hasil uji 1.0.3)
+
+- Tanda tangan dan stempel Word: posisi dihitung dari tepi kolom (sebelumnya ikut bergeser sebesar indentasi paragraf).
+- Tampilan Mengalir: blok tanda tangan yang menjorok jauh tidak lagi tersusun huruf ke bawah; tabel lebar tidak dipersempit berlebihan (bisa digeser ke samping).
+- Judul file: seluruh blok judul bisa diketuk untuk Bagikan; di pembaca PDF, ketuk judul membuka Bagikan PDF.
+- PowerPoint 4/6 slide per lembar: pilihan arah kertas (Tegak/Mendatar), susunan otomatis mengisi kertas; arah kertas juga diteruskan ke cetak dan Bagikan sebagai PDF.

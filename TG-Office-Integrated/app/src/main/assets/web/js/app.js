@@ -8,7 +8,7 @@ import {PdfViewer} from './viewers/pdf.js';
 
 /* TeGe Office — cangkang aplikasi: beranda, menu penampil seragam, cetak, jembatan Android. */
 window.__TG_OFFICE_BOOTED__=true;
-const APP_VERSION='Versi 1.0.3';
+const APP_VERSION='Versi 1.0.4';
 const bridge=window.AndroidBridge||null;
 /* Pengaturan (disimpan di perangkat) */
 const PREF_KEY='tg-office-prefs',PREF_DEF={progres:true,word:'mengalir',ppt:'satu',pdf:'gulir'};
@@ -343,11 +343,11 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 /* Bagikan */
 function sharePdf(){if(!current)return toast('Tidak ada file aktif.');if(currentType==='pdf')return shareCurrent();printCurrent('pdf')}
 function shareChoice(){
-  if(!current||!currentFile)return;
+  if(!current||!currentFile)return toast('Dokumen belum selesai dimuat.');
   if(currentType==='pdf')return shareCurrent();
   optionSheet('Bagikan dokumen',[{id:'orig',label:'Bagikan file asli',desc:'Dikirim apa adanya (Word, Excel, atau PowerPoint)'},{id:'pdf',label:'Bagikan sebagai PDF',desc:'Cocok bila penerima tidak punya aplikasi Office'}],null,id=>id==='pdf'?sharePdf():shareCurrent());
 }
-{const t=qs('#viewerFileName');t.setAttribute('role','button');t.tabIndex=0;t.onclick=()=>shareChoice()}
+{const t=qs('.file-identity');t.setAttribute('role','button');t.tabIndex=0;t.addEventListener('click',e=>{e.stopPropagation();setTimeout(shareChoice,30)})}
 async function shareCurrent(){
   if(!currentFile)return toast('Tidak ada file aktif.');const f=withMime(currentFile,currentType);
   if(bridge){
@@ -362,7 +362,8 @@ async function shareCurrent(){
 let printStyle=null;
 /* 'print' = dialog cetak; 'pdf' = buat PDF lalu buka menu Bagikan */
 let outMode='print';
-function setPageSize(css){printStyle?.remove();printStyle=document.createElement('style');printStyle.textContent=`@media print{@page{size:${css};margin:0}}`;document.head.append(printStyle)}
+let pageOrient='portrait';
+function setPageSize(css,orient){pageOrient=orient||(/landscape/.test(css)?'landscape':'portrait');try{bridge?.setPrintOrientation?.(pageOrient)}catch{}printStyle?.remove();printStyle=document.createElement('style');printStyle.textContent=`@media print{@page{size:${css};margin:0}}`;document.head.append(printStyle)}
 function finishPrint(){if(outMode==='pdf')setLoading(false);outMode='print';document.body.classList.remove('printing');printRoot.classList.remove('preparing');printRoot.replaceChildren();printStyle?.remove();printStyle=null}
 window.__TG_PRINT_DONE__=finishPrint;
 async function waitImages(root){const imgs=[...root.querySelectorAll('img')];await Promise.all(imgs.map(i=>i.complete?null:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,4000)})));await new Promise(r=>setTimeout(r,250))}
@@ -385,7 +386,7 @@ async function printPdf(){
 }
 async function printDocx(){
   const pages=current?.pages||[];if(!pages.length)return toast('Halaman dokumen belum siap.');
-  const pw=current.page?.w||794,ph=current.page?.h||1123;setPageSize(`${(pw/96).toFixed(3)}in ${(ph/96).toFixed(3)}in`);
+  const pw=current.page?.w||794,ph=current.page?.h||1123;setPageSize(`${(pw/96).toFixed(3)}in ${(ph/96).toFixed(3)}in`,pw>ph?'landscape':'portrait');
   printRoot.replaceChildren();printRoot.classList.add('preparing');const wrap=document.createElement('div');wrap.className='print-docx';
   for(const p of pages){const page=document.createElement('div');page.className='print-page';const c=p.cloneNode(true);c.querySelectorAll('mark.tg-search-hit').forEach(m=>m.replaceWith(document.createTextNode(m.textContent)));page.append(c);wrap.append(page)}
   printRoot.append(wrap);toast('Menyiapkan cetak…',1500);await runPrint(baseName()+' (TeGe Office)');
@@ -395,20 +396,34 @@ function segHtml(name,opts,sel){return `<div class="seg" data-seg="${name}">${op
 function bindSeg(box){box.querySelectorAll('.seg').forEach(seg=>seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');seg.dataset.value=b.dataset.v;box.dispatchEvent(new Event('change'))}))}
 function segVal(box,name){const seg=box.querySelector(`[data-seg="${name}"]`);return seg?.querySelector('button.on')?.dataset.v}
 function pptPrintSheet(){
-  const total=current?.slideCount||1;
-  openSheet(`<h3 class="sheet-title">${outMode==='pdf'?'PowerPoint ke PDF':'Cetak PowerPoint'}</h3><div class="sheet-label">SLIDE PER LEMBAR</div>${segHtml('per',[['1','1'],['4','4'],['6','6']],'1')}<div class="sheet-label">RENTANG</div>${segHtml('range',[['all','Semua'],['cur','Slide ini']],'all')}<p class="sheet-note" id="pptNote"></p><button class="solid-btn" id="pptGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
-    bindSeg(box);const note=()=>{const per=+segVal(box,'per'),n=segVal(box,'range')==='cur'?1:total;box.querySelector('#pptNote').textContent=`${n} slide akan menjadi ${Math.ceil(n/per)} lembar. Slide digambar dulu sebelum dicetak, jadi file besar butuh beberapa detik.`};note();box.addEventListener('change',note);
-    box.querySelector('#pptGo').onclick=()=>{const per=+segVal(box,'per'),range=segVal(box,'range');sheet.close();printPpt(per,range)};
+  const total=current?.slideCount||1,defOrient=per=>per===6?'portrait':'landscape';
+  openSheet(`<h3 class="sheet-title">${outMode==='pdf'?'PowerPoint ke PDF':'Cetak PowerPoint'}</h3><div class="sheet-label">SLIDE PER LEMBAR</div>${segHtml('per',[['1','1'],['4','4'],['6','6']],'1')}<div id="pptOrientBox" class="hidden"><div class="sheet-label">ARAH KERTAS</div>${segHtml('orient',[['portrait','Tegak'],['landscape','Mendatar']],'landscape')}</div><div class="sheet-label">RENTANG</div>${segHtml('range',[['all','Semua'],['cur','Slide ini']],'all')}<p class="sheet-note" id="pptNote"></p><button class="solid-btn" id="pptGo" type="button">${outMode==='pdf'?'Buat PDF':'Lanjut ke dialog cetak'}</button>`,box=>{
+    bindSeg(box);let lastPer=1;
+    const setOrient=o=>box.querySelectorAll('[data-seg="orient"] button').forEach(b=>b.classList.toggle('on',b.dataset.v===o));
+    const note=()=>{const per=+segVal(box,'per'),n=segVal(box,'range')==='cur'?1:total;
+      if(per!==lastPer){lastPer=per;setOrient(defOrient(per))}
+      box.querySelector('#pptOrientBox').classList.toggle('hidden',per===1);
+      box.querySelector('#pptNote').textContent=`${n} slide akan menjadi ${Math.ceil(n/per)} lembar. Slide digambar dulu, jadi file besar butuh beberapa detik.`};
+    note();box.addEventListener('change',note);
+    box.querySelector('#pptGo').onclick=()=>{const per=+segVal(box,'per'),range=segVal(box,'range'),orient=per===1?'landscape':(segVal(box,'orient')||defOrient(per));sheet.close();printPpt(per,range,orient)};
   });
 }
-async function printPpt(per,range){
+/* Susunan kolom x baris yang membuat slide paling besar di kertas */
+function pptGrid(per,pageW,pageH,pad,gap,sw,sh){
+  let best=null;
+  for(let cols=1;cols<=per;cols++){const rows=Math.ceil(per/cols);if((cols-1)*rows>=per)continue;
+    const cw=(pageW-pad*2-gap*(cols-1))/cols,ch=(pageH-pad*2-gap*(rows-1))/rows,sc=Math.min(cw/sw,ch/sh);
+    if(!best||sc>best.scale)best={cols,rows,scale:sc}}
+  return best;
+}
+async function printPpt(per,range,orient='landscape'){
   const total=current.slideCount||1,list=range==='cur'?[current.index||0]:[...Array(total).keys()];
-  const portrait=per===6,pageW=portrait?790:1119,pageH=portrait?1119:790,cols=per===1?1:2,rows=per===1?1:per===4?2:3,pad=per===1?24:30,gap=per===1?0:16;
-  setPageSize(portrait?'A4 portrait':'A4 landscape');printRoot.replaceChildren();printRoot.classList.add('preparing');setLoading(true,'Menyiapkan cetak','Menggambar slide…');
-  const {w:sw,h:sh}=current.slidePx();const cellW=(pageW-pad*2-gap*(cols-1))/cols,cellH=(pageH-pad*2-gap*(rows-1))/rows,scale=Math.min(cellW/sw,cellH/sh);
+  const portrait=orient==='portrait',pageW=portrait?790:1119,pageH=portrait?1119:790,pad=per===1?24:28,gap=per===1?0:14;
+  setPageSize(portrait?'A4 portrait':'A4 landscape',portrait?'portrait':'landscape');printRoot.replaceChildren();printRoot.classList.add('preparing');setLoading(true,'Menyiapkan cetak','Menggambar slide…');
+  const {w:sw,h:sh}=current.slidePx();const {cols,rows,scale}=pptGrid(per,pageW,pageH,pad,gap,sw,sh);
   try{
     for(let p=0;p<list.length;p+=per){
-      const page=document.createElement('div');page.className='print-page';page.style.cssText=`width:${pageW}px;height:${pageH}px;padding:${pad}px;box-sizing:border-box;display:grid;grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);gap:${gap}px;align-items:center;justify-items:center`;
+      const page=document.createElement('div');page.className='print-page';page.style.cssText=`width:${pageW}px;height:${pageH}px;padding:${pad}px;box-sizing:border-box;display:grid;grid-template-columns:repeat(${cols},${sw*scale}px);grid-template-rows:repeat(${rows},${sh*scale}px);gap:${gap}px;justify-content:center;align-content:center`;
       for(const i of list.slice(p,p+per)){qs('#loadingText').textContent=`Menggambar slide ${i+1} dari ${total}…`;const cell=document.createElement('div');cell.className='print-slide';cell.style.cssText=`width:${sw*scale}px;height:${sh*scale}px`;const stage=document.createElement('div');stage.className='stage';stage.style.transform=`scale(${scale})`;cell.append(stage);page.append(cell);printRoot.append(page);await current.renderSlideInto(i,stage)}
       printRoot.append(page);
     }
