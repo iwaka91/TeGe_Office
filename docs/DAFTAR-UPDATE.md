@@ -1,6 +1,6 @@
 # Daftar Update TeGe Office
 
-Dicatat: 20 Oktober 2026. Status: **belum dikerjakan** (menunggu perintah "Update Kode").
+Dicatat: 20 Oktober 2026. Status: **sudah dikerjakan di kode (22 November 2026), belum diuji di HP**. Tahap 1 = versi 1.0.3 (butir 1, 2, 3; butir 6 sudah ada). Tahap 2 = butir 4 dan 5.
 
 ## Perbaikan bug
 

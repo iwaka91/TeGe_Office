@@ -570,7 +570,8 @@ class DocxViewer{
       }
       let node=null;
       if(blip){
-        const url=await this._img(attr(blip,'embed'),ctx);if(!url)return;
+        const cc=firstByLocal(blip,'clrChange'),keyHex=cc?A(firstByLocal(cc,'clrFrom')?.firstElementChild):null;
+        const url=keyHex?await this._imgKeyed(attr(blip,'embed'),ctx,keyHex):await this._img(attr(blip,'embed'),ctx);if(!url)return;
         node=document.createElement('img');node.src=url;node.alt='Gambar dokumen';if(cx){node.style.width=(cx/9525)+'px';if(cy)node.style.aspectRatio=`${cx}/${cy}`}
       }else{
         const g=firstByLocal(anc,'prstGeom'),prst=A(g,'prst');
@@ -592,6 +593,27 @@ class DocxViewer{
     const path=ctx.rels[rid];if(!path||!this.zip.has(path))return null;
     if(this.imgCache.has(path))return this.imgCache.get(path);
     const ext=(path.split('.').pop()||'').toLowerCase(),url=await this.zip.blobUrl(path,MIME[ext]||'application/octet-stream');this.urls.push(url);this.imgCache.set(path,url);return url;
+  }
+
+  /* Gambar dengan "warna transparan" Word (clrChange): warna kunci dibuat tembus pandang. */
+  async _imgKeyed(rid,ctx,hex){
+    const path=ctx.rels[rid];if(!path||!this.zip.has(path))return null;
+    const key='key:'+hex+':'+path;if(this.imgCache.has(key))return this.imgCache.get(key);
+    const plain=await this._img(rid,ctx);if(!plain||!/^[0-9a-f]{6}$/i.test(hex))return plain;
+    try{
+      const im=new Image();im.src=plain;await im.decode();
+      const w=im.naturalWidth,h=im.naturalHeight;if(!w||!h)return plain;
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      const g=cv.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0);
+      const d=g.getImageData(0,0,w,h),px=d.data,kr=parseInt(hex.slice(0,2),16),kg=parseInt(hex.slice(2,4),16),kb=parseInt(hex.slice(4,6),16);
+      for(let i=0;i<px.length;i+=4){
+        const df=Math.max(Math.abs(px[i]-kr),Math.abs(px[i+1]-kg),Math.abs(px[i+2]-kb));
+        if(df<=20)px[i+3]=0;else if(df<60)px[i+3]=Math.round(px[i+3]*(df-20)/40);
+      }
+      g.putImageData(d,0,0);
+      const blob=await new Promise(r=>cv.toBlob(r,'image/png'));if(!blob)return plain;
+      const url=URL.createObjectURL(blob);this.urls.push(url);this.imgCache.set(key,url);return url;
+    }catch(e){return plain}
   }
 
   /* ---------- tabel ---------- */
@@ -1474,7 +1496,7 @@ const {PptxViewer}=require('js/viewers/pptx.js');
 const {PdfViewer}=require('js/viewers/pdf.js');
 /* TeGe Office — cangkang aplikasi: beranda, menu penampil seragam, cetak, jembatan Android. */
 window.__TG_OFFICE_BOOTED__=true;
-const APP_VERSION='Versi 1.0.2';
+const APP_VERSION='Versi 1.0.3';
 const bridge=window.AndroidBridge||null;
 /* Pengaturan (disimpan di perangkat) */
 const PREF_KEY='tg-office-prefs',PREF_DEF={progres:true,word:'mengalir',ppt:'satu',pdf:'gulir'};
@@ -1646,7 +1668,8 @@ function menuItems(){
   head.push(item(ICON.full,'Layar penuh',()=>toggleFullscreen()));
   head.push(item(dark?ICON.sun:ICON.moon,dark?'Tema terang':'Tema gelap',()=>toggleTheme()));
   head.push(item(ICON.print,'Cetak',()=>printCurrent()));
-  head.push(item(ICON.share,'Bagikan '+(SUPPORTED[t]?.label||'file'),()=>shareCurrent()));
+  if(t==='pdf')head.push(item(ICON.share,'Bagikan PDF',()=>shareCurrent()));
+  else{head.push(item(ICON.share,'Bagikan file asli',()=>shareCurrent()));head.push(item(ICON.share,'Bagikan sebagai PDF',()=>sharePdf()))}
   return head;
 }
 function openMenu(){
@@ -1806,6 +1829,13 @@ async function toggleFullscreen(){
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&viewer.classList.contains('focus-mode')&&!bridge?.setImmersive)setFocusMode(false)});
 
 /* Bagikan */
+function sharePdf(){if(!current)return toast('Tidak ada file aktif.');if(currentType==='pdf')return shareCurrent();printCurrent('pdf')}
+function shareChoice(){
+  if(!current||!currentFile)return;
+  if(currentType==='pdf')return shareCurrent();
+  optionSheet('Bagikan dokumen',[{id:'orig',label:'Bagikan file asli',desc:'Dikirim apa adanya (Word, Excel, atau PowerPoint)'},{id:'pdf',label:'Bagikan sebagai PDF',desc:'Cocok bila penerima tidak punya aplikasi Office'}],null,id=>id==='pdf'?sharePdf():shareCurrent());
+}
+{const t=qs('#viewerFileName');t.setAttribute('role','button');t.tabIndex=0;t.onclick=()=>shareChoice()}
 async function shareCurrent(){
   if(!currentFile)return toast('Tidak ada file aktif.');const f=withMime(currentFile,currentType);
   if(bridge){
@@ -1818,17 +1848,20 @@ async function shareCurrent(){
 
 /* ---------- Cetak ---------- */
 let printStyle=null;
+/* 'print' = dialog cetak; 'pdf' = buat PDF lalu buka menu Bagikan */
+let outMode='print';
 function setPageSize(css){printStyle?.remove();printStyle=document.createElement('style');printStyle.textContent=`@media print{@page{size:${css};margin:0}}`;document.head.append(printStyle)}
-function finishPrint(){document.body.classList.remove('printing');printRoot.classList.remove('preparing');printRoot.replaceChildren();printStyle?.remove();printStyle=null}
+function finishPrint(){if(outMode==='pdf')setLoading(false);outMode='print';document.body.classList.remove('printing');printRoot.classList.remove('preparing');printRoot.replaceChildren();printStyle?.remove();printStyle=null}
 window.__TG_PRINT_DONE__=finishPrint;
 async function waitImages(root){const imgs=[...root.querySelectorAll('img')];await Promise.all(imgs.map(i=>i.complete?null:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,4000)})));await new Promise(r=>setTimeout(r,250))}
 async function runPrint(job){
   document.body.classList.add('printing');await waitImages(printRoot);
+  if(outMode==='pdf'&&bridge?.exportWebPdf){setLoading(true,'Menyiapkan PDF','Mohon tunggu, dokumen sedang diubah ke PDF');if(!bridge.exportWebPdf(baseName())){finishPrint();toast('Gagal menyiapkan PDF.')}return}
   if(bridge?.printWeb){if(!bridge.printWeb(job))finishPrint();return}
   window.print();setTimeout(finishPrint,800);
 }
-function printCurrent(){
-  if(!current)return;
+function printCurrent(mode='print'){
+  if(!current)return;outMode=mode==='pdf'?'pdf':'print';
   if(currentType==='pdf')return printPdf();
   if(currentType==='docx')return printDocx();
   if(currentType==='pptx')return pptPrintSheet();
@@ -1851,7 +1884,7 @@ function bindSeg(box){box.querySelectorAll('.seg').forEach(seg=>seg.querySelecto
 function segVal(box,name){const seg=box.querySelector(`[data-seg="${name}"]`);return seg?.querySelector('button.on')?.dataset.v}
 function pptPrintSheet(){
   const total=current?.slideCount||1;
-  openSheet(`<h3 class="sheet-title">Cetak PowerPoint</h3><div class="sheet-label">SLIDE PER LEMBAR</div>${segHtml('per',[['1','1'],['4','4'],['6','6']],'1')}<div class="sheet-label">RENTANG</div>${segHtml('range',[['all','Semua'],['cur','Slide ini']],'all')}<p class="sheet-note" id="pptNote"></p><button class="solid-btn" id="pptGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
+  openSheet(`<h3 class="sheet-title">${outMode==='pdf'?'PowerPoint ke PDF':'Cetak PowerPoint'}</h3><div class="sheet-label">SLIDE PER LEMBAR</div>${segHtml('per',[['1','1'],['4','4'],['6','6']],'1')}<div class="sheet-label">RENTANG</div>${segHtml('range',[['all','Semua'],['cur','Slide ini']],'all')}<p class="sheet-note" id="pptNote"></p><button class="solid-btn" id="pptGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
     bindSeg(box);const note=()=>{const per=+segVal(box,'per'),n=segVal(box,'range')==='cur'?1:total;box.querySelector('#pptNote').textContent=`${n} slide akan menjadi ${Math.ceil(n/per)} lembar. Slide digambar dulu sebelum dicetak, jadi file besar butuh beberapa detik.`};note();box.addEventListener('change',note);
     box.querySelector('#pptGo').onclick=()=>{const per=+segVal(box,'per'),range=segVal(box,'range');sheet.close();printPpt(per,range)};
   });
@@ -1872,7 +1905,7 @@ async function printPpt(per,range){
 }
 function xlsxPrintSheet(){
   const many=(current?.book?.sheets?.length||1)>1;
-  openSheet(`<h3 class="sheet-title">Cetak Excel</h3>${many?`<div class="sheet-label">YANG DICETAK</div>${segHtml('what',[['cur','Sheet ini'],['all','Semua sheet']],'cur')}`:''}<div class="sheet-label">UKURAN</div>${segHtml('fit',[['fit','Muat lebar kertas'],['real','Ukuran asli']],'fit')}<div class="sheet-label">ARAH KERTAS</div>${segHtml('orient',[['portrait','Tegak'],['landscape','Mendatar']],'landscape')}<p class="sheet-note">Tabel yang lebar diperkecil agar semua kolom muat dalam satu lembar.</p><button class="solid-btn" id="xlsGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
+  openSheet(`<h3 class="sheet-title">${outMode==='pdf'?'Excel ke PDF':'Cetak Excel'}</h3>${many?`<div class="sheet-label">YANG DICETAK</div>${segHtml('what',[['cur','Sheet ini'],['all','Semua sheet']],'cur')}`:''}<div class="sheet-label">UKURAN</div>${segHtml('fit',[['fit','Muat lebar kertas'],['real','Ukuran asli']],'fit')}<div class="sheet-label">ARAH KERTAS</div>${segHtml('orient',[['portrait','Tegak'],['landscape','Mendatar']],'landscape')}<p class="sheet-note">Tabel yang lebar diperkecil agar semua kolom muat dalam satu lembar.</p><button class="solid-btn" id="xlsGo" type="button">Lanjut ke dialog cetak</button>`,box=>{
     bindSeg(box);box.querySelector('#xlsGo').onclick=()=>{const o={what:segVal(box,'what')||'cur',fit:segVal(box,'fit'),orient:segVal(box,'orient')};sheet.close();printXlsx(o)};
   });
 }

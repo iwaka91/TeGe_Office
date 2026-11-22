@@ -534,6 +534,30 @@ public final class MainActivity extends Activity {
         try{pm.print(job,wrapped,new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());}
         catch(Exception e){notifyPrintDone();Toast.makeText(this,"Dialog cetak tidak tersedia",Toast.LENGTH_SHORT).show();}
     }
+    private void exportWebPdfNow(String baseName){
+        if(web==null){notifyPrintDone();return;}
+        String base=(baseName==null||baseName.trim().isEmpty())?"Dokumen":baseName.trim();
+        final File out=namedTransferFile(base+".pdf");
+        try{
+            PrintAttributes attrs=new PrintAttributes.Builder()
+                .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                .setResolution(new PrintAttributes.Resolution("pdf","pdf",300,300))
+                .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build();
+            android.print.TgPdfExporter.export(web.createPrintDocumentAdapter(base),attrs,out,
+                new android.print.TgPdfExporter.Listener(){
+                    @Override public void onDone(File f){notifyPrintDone();shareFile(f,"application/pdf");}
+                    @Override public void onFail(String why){
+                        out.delete();notifyPrintDone();
+                        Toast.makeText(MainActivity.this,"Gagal membuat PDF",Toast.LENGTH_LONG).show();
+                    }
+                });
+        }catch(Throwable t){
+            // Cadangan: bila pembuatan PDF langsung tidak didukung perangkat, buka dialog cetak biasa.
+            out.delete();
+            Toast.makeText(this,"Pilih \"Simpan sebagai PDF\" lalu bagikan",Toast.LENGTH_LONG).show();
+            printWebPage(base);
+        }
+    }
     private void notifyPrintDone(){
         runOnUiThread(()->{if(web!=null)web.evaluateJavascript("window.__TG_PRINT_DONE__&&window.__TG_PRINT_DONE__();",null);});
     }
@@ -704,6 +728,11 @@ public final class MainActivity extends Activity {
             File f=completed(id);if(f==null)return false;
             final String job=f.getName().replaceFirst("^tg-[a-z0-9]+-","");
             runOnUiThread(()->printPdfFile(f,job));
+            return true;
+        }
+        /** Ubah isi cetak (printRoot) jadi PDF bernama asli dokumen lalu buka menu Bagikan. */
+        @JavascriptInterface public boolean exportWebPdf(String baseName){
+            runOnUiThread(()->exportWebPdfNow(baseName));
             return true;
         }
         @JavascriptInterface public boolean shareCurrentFile(String name){
