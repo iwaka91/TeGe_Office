@@ -4,7 +4,7 @@ on:
   push:
     branches: [apk-uji]
 permissions:
-  contents: read
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -33,3 +33,9 @@ jobs:
           name: apk-uji
           path: TG-Office-Integrated/app/build/outputs/apk/debug/*.apk
           retention-days: 1
+      - name: Rilis sementara untuk diunduh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp TG-Office-Integrated/app/build/outputs/apk/debug/*.apk TeGe-Office-1.0.3-uji.apk
+          gh release create tmp-apk-uji TeGe-Office-1.0.3-uji.apk --prerelease --title sementara --notes "dihapus segera"
